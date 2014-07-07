@@ -1,9 +1,9 @@
-#/bin/bash
-#This is the Marmoset R Archive Network (MRAN) update script
+#!/bin/bash
+#This is the `Modern R Archive Network` (MRAN) update script
 #We use ZFS for snapshots
 
-#rrt-user account works with dates and times in GMT via ~/.profile, we set it again here so that is made clear
-export TZ="GMT"
+#rrt-user account works with dates and times in UTC via ~/.profile, we set it again here so that is made clear
+export TZ="UTC"
 
 #use ISO standard for date, underscore for date time seperator, no colon for hour minute seperation
 #example: 2014-06-16_2300
@@ -14,7 +14,7 @@ DATE=$(date +"%Y-%m-%d_%H%M")
 MRAN_HOME="/MRAN/RRT"
 
 #define staging area home
-STAGING_HOME=/MRAN/staging
+STAGING_HOME="/MRAN/staging"
 
 #create MRAN from the master CRAN server in Vienna
 
@@ -29,8 +29,8 @@ cd $STAGING_HOME
 #You will get warnings about dirs that already exist
 for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); mkdir $MRAN_HOME/$dirname; done
 
-#part FOUR, copy the files with rsync from local staging area to respective dirs in MRAN_HOME, preserving the original timestamps 
-for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); rsync -rt $file $MRAN_HOME/$dirname/; done
+#part FOUR, copy the files with rsync from local staging area to respective dirs in MRAN_HOME, preserving the original timestamps
+for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); rsync -rt --ignore-existing $file $MRAN_HOME/$dirname/; done
 
 
 #take a new snapshot after the rsync process is finished
@@ -63,3 +63,13 @@ echo $CURRENT >> $WWW_HOME/diffs/RRT_$DATE.txt
 echo "Diff Contents:" >> $WWW_HOME/diffs/RRT_$DATE.txt
 
 sudo zfs diff $LAST $CURRENT >> $WWW_HOME/diffs/RRT_$DATE.txt
+
+#update space accounting info page at the end
+/home/rrt-user/accounting.bsh
+
+#run the metadata update script now
+cd $HOME
+/usr/local/bin/Rscript mran_metadata.R
+
+#run the space accounting script
+/home/rrt-user/accounting.bsh

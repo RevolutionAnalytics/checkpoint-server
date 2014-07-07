@@ -1,0 +1,81 @@
+#!/bin/bash
+#     __  ___   ____     ___       _   __
+#    /  |/  /  / __ \   /   |     / | / /
+#   / /|_/ /  / /_/ /  / /| |    /  |/ /
+#  / /  / /  / _, _/  / ___ |   / /|  /
+# /_/  /_/  /_/ |_|  /_/  |_|  /_/ |_/
+
+#MRAN server configuration and setup for Ubuntu 14.04
+#these commands are run as root user
+
+#MRAN operates on UTC time zone (which is very similar to GMT.)
+#This is important for scientific reproducibility aspects of statistical analyses.
+#Type `date` into a shell prompt on your server to see the current time zone.
+
+#If your server is not already on UTC, run the command below as user root
+  # `dpkg-reconfigure tzdata`
+#select "none of the above", then choose UTC.
+
+#set your time manually with ntpdate before installing the ntpd service
+ntpdate 0.ubuntu.pool.ntp.org
+
+#add the required package repositories
+aptitude update
+aptitude safe-upgrade -y
+aptitude install -y python3-software-properties
+add-apt-repository --yes ppa:nginx/stable
+add-apt-repository --yes ppa:git-core
+add-apt-repository --yes ppa:zfs-native/stable
+aptitude update
+
+#install the packages we need for this server
+#zfs kernel modules will take a long time to build, be patient
+aptitude install ubuntu-zfs nginx-full ntp git at htop screen
+
+modprobe zfs
+dmesg | grep ZFS
+
+#configure the firewall for ssh, http, rsync access
+ufw enable
+ufw allow 22/tcp
+ufw allow 80/tcp
+ufw allow 873/tcp
+
+#Note: Please read about ZFS best practices before putting your system into production.
+
+#create a zpool on a block device
+#you will need to determine the correct block device identifier.
+#for better reliability on physical Linux systems /dev/disk/by-id/<disk-name>
+#is the best disk id method to use.
+#using whole disk mirrors or raidz2 on physical systems is highly reccommended.
+#on many cloud servers, /dev/disk/by-id does not exist, therefore attach a block
+#device to the system and use old /dev identifiers for creating your zpool.
+
+##################################
+#CHANGE ME TO CORRECT BLOCK DEVICE
+zpool create MRAN /dev/xvdb
+##################################
+
+zfs set atime=off MRAN
+zfs set compression=lzjb MRAN
+zfs create MRAN/packages
+zfs create MRAN/www
+zfs create MRAN/staging
+zfs create MRAN/exports
+
+#add rrt-user account for running MRAN update scripts
+adduser --disabled-password --gecos "" mran-user
+
+
+
+
+
+#create symbolic link to packages file system snapshot directory
+cd /MRAN/www
+ln -s /MRAN/packages/.zfs/snapshot/ snapshots
+
+
+
+#configure unattended upgrades
+#set to 'yes' or 'on'
+#dpkg-reconfigure unattended-upgrades
