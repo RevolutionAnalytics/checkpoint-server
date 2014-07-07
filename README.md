@@ -1,7 +1,7 @@
 MRAN
 ====
 
-**M**odern **R** **A**rchive **N**etwork
+*M*odern *R* *A*rchive *N*etwork
 
 #### Downstream [CRAN](http://cran.r-project.org/) server with snapshot capabilities + advanced metadata from [RRT](http://revolutionanalytics.github.io/RRT)
 
