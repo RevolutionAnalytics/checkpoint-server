@@ -8,16 +8,16 @@
 MASTER_URL="mran.revolutionanalytics.com" #change to your server URL if not pointing to Revo master
 RSYNC_MODULE="MRAN-exports" #-------------#only change if not using Revo master
 ARCHIVE="mran-2014-6-30_517pm.zfs" #------#use the latest replication stream from Revo master
-TMP_DESTINATION="/tmp" #------------------#this temp holding area needs to be large enough to hold a full archive.
+TMP_DESTINATION="/tmp" #------------------#this temp holding area needs to be large enough to hold a full archive
                                           #See http://mran.revolutionanalytics.com/accounting.txt for a current MRAN size
-MRAN_HOME="MRAN" #------------------------#only change if not using standard MRAN terminology for your zfs FS's
+MRAN_HOME="MRAN" #------------------------#name of zpool where you want to import packages snapshot stream to
 
 
 #STEP 1 - get a replication stream from master MRAN server
 
 #we use rsync for higher efficiency over WAN
 
-#base rsync module for Revo master server exports
+#base rsync URL and module for Revo master server exports
 #rsync -tv mran.revolutionanalytics.com::MRAN-exports
 
 #choose an appropriate export
