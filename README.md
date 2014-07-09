@@ -29,5 +29,5 @@ from another server or another zpool on an existing system.
 Change the line starting with CHANGE ME to the correct device, then run the
 script to get started building your MRAN server.
 
-* Issues, improvements, ideas? Please use the [RRT issue tracker](https://github.com/RevolutionAnalytics/RRT/issues)
+* Issues, improvements, ideas? Please use the [MRAN issue tracker](https://github.com/RevolutionAnalytics/MRAN/issues)
 to file any bug reports or leave feedback about MRAN.
