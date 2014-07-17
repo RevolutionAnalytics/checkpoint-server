@@ -59,9 +59,9 @@ getmessage <- function(pkg){
 }
 
 ### define things
-dirs <- list.files("/MRAN/RRT/.zfs/snapshot")
+dirs <- list.files("/MRAN/packages/src/.zfs/snapshot")
 dirtoget <- dirs[length(dirs)]
-pkgdirs <- list.files(file.path("/MRAN/RRT/.zfs/snapshot", dirtoget))
+pkgdirs <- list.files(file.path("/MRAN/packages/src/.zfs/snapshot", dirtoget))
 # justpkgnames <- sapply(pkgdirs, function(x) strsplit(x, "_")[[1]][[1]], USE.NAMES=FALSE)
 
 #### get metadata from CRAN
@@ -78,12 +78,12 @@ aslist <- compact(aslist)
 
 ### add more metadata to the json (as list), then write again to json
 #### get archive data
-mranurl <- 'http://marmoset.revolutionanalytics.com/snapshots/%s/%s/%s'
+mranurl <- 'http://mran.revolutionanalytics.com/snapshots/%s/%s/%s'
 archiveurls <- lapply(pkgdirs, function(z){
-  # tmp <- sprintf(mranurl, dirtoget, z, list.files(file.path("/MRAN/RRT/.zfs/snapshot", dirtoget, z)))
-  tmp <- list.files(file.path("/MRAN/RRT/.zfs/snapshot", dirtoget, z))
+  # tmp <- sprintf(mranurl, dirtoget, z, list.files(file.path("/MRAN/packages/src/.zfs/snapshot", dirtoget, z)))
+  tmp <- list.files(file.path("/MRAN/packages/src/.zfs/snapshot", dirtoget, z))
   names(tmp) <-
-    vapply(list.files(file.path("/MRAN/RRT/.zfs/snapshot", dirtoget, z)), function(x) gsub(sprintf("%s_|.tar.gz", z), "", x), "", USE.NAMES=FALSE)
+    vapply(list.files(file.path("/MRAN/packages/src/.zfs/snapshot", dirtoget, z)), function(x) gsub(sprintf("%s_|.tar.gz", z), "", x), "", USE.NAMES=FALSE)
   tmp
 })
 names(archiveurls) <- pkgdirs
@@ -96,7 +96,7 @@ allpkgs <- lapply(aslist, function(x){
     snapshotDiffId = sprintf("RRT_%s.txt", dirtoget),
     compatibitlityCheck = NULL,
     message = getmessage(x$package),
-    source = list(baseurl = sprintf("http://marmoset.revolutionanalytics.com/snapshots/%s/%s/", dirtoget, x$package),
+    source = list(baseurl = sprintf("http://mran.revolutionanalytics.com/snapshots/%s/%s/", dirtoget, x$package),
       ver = as.list(archiveurls[[x$package]])),
     windows = current_windows(x$package, x$description$Version),
     osx = current_osx(x$package, x$description$Version)
@@ -109,10 +109,10 @@ jsonallpkgs <- lapply(allpkgs, function(x) toJSON(x, auto_unbox = TRUE))
 
 ### Write JSON to disk
 # now <- Sys.Date()
-dircreate <- sprintf("/MRAN/www/metadata/logs/%s", dirtoget)
+dircreate <- sprintf("/MRAN/www/metadata/src/logs/%s", dirtoget)
 dir.create(dircreate)
 for(i in seq_along(jsonallpkgs)){
-  path <- sprintf("/MRAN/www/metadata/logs/%s/%s.json", dirtoget, allpkgs[[i]]$package)
+  path <- sprintf("/MRAN/www/metadata/src/logs/%s/%s.json", dirtoget, allpkgs[[i]]$package)
   on.exit(close(path))
   writeLines(jsonallpkgs[[i]], path)
 }
