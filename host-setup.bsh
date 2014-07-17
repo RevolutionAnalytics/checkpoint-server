@@ -52,30 +52,44 @@ ufw allow 873/tcp
 #device to the system and use old /dev identifiers for creating your zpool.
 
 ##################################
-#CHANGE ME TO CORRECT BLOCK DEVICE
+#CHANGE ME TO CORRECT BLOCK DEVICE(S)
 zpool create MRAN /dev/xvdb
 ##################################
 
 zfs set atime=off MRAN
 zfs set compression=lzjb MRAN
 zfs create MRAN/packages
+zfs create MRAN/packages/src
+zfs create MRAN/packages/bin
+zfs create MRAN/packages/bin/windows
+zfs create MRAN/packages/bin/macosx
+zfs create MRAN/packages/bin/linux
 zfs create MRAN/www
-zfs create MRAN/staging
-zfs create MRAN/exports
+zfs create MRAN/staging/src
+zfs create MRAN/staging/bin
+zfs create MRAN/bioc/src
+zfs create MRAN/bioc/bin
+
+#create a seperate zpool for storing exports of MRAN file systems
+#zpool create exports /dev/xvdd
+
 
 #add rrt-user account for running MRAN update scripts
 adduser --disabled-password --gecos "" mran-user
-
-
-
 
 
 #create symbolic link to packages file system snapshot directory
 cd /MRAN/www
 ln -s /MRAN/packages/.zfs/snapshot/ snapshots
 
+#turn on rsync deamon and set some options
+sed -i 's;RSYNC_ENABLE=false;RSYNC_ENABLE=true;' /etc/default/rsync
+sed -i 's;# RSYNC_CONFIG_FILE=;RSYNC_CONFIG_FILE=/etc/rsyncd.conf;' /etc/default/rsync
+
+#copy our config file to /etc
+cp rsyncd.conf /etc/rsyncd.conf
 
 
-#configure unattended upgrades
+#configure unattended system upgrades
 #set to 'yes' or 'on'
 #dpkg-reconfigure unattended-upgrades
