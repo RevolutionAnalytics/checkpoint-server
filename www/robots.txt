@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: 
+Disallow: /snapsphots
+Disallow: /metadata/logs
+Disallow: /diffs
