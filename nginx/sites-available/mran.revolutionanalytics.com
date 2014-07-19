@@ -1,7 +1,6 @@
 #mran.revolutionanalytics.com
 #Chris Mosetick 2014-06-12
-#last update    2014-07-10
-
+#last update    2014-07-19
 
 server {
         #listen on IPv4 and IPv6 addresses at the same time
@@ -10,12 +9,12 @@ server {
 
         #directory in the file system to serve web pages and packages from
         #this is a detachable block disk formatted with ZFS that can be easily moved to another server
-        #www dir is for landing page stuff
+	#www dir is for landing page stuff
         root /MRAN/www;
         index index.html index.htm;
 
         # public facing domain name for this vhost
-        server_name mran.revolutionanalytics.com;
+        server_name marmoset.revolutionanalytics.com;
 
 
         location /snapshots {
@@ -30,24 +29,31 @@ server {
         location /metadata {
                 try_files $uri $uri/ =404;
                 autoindex on;
-                # Uncomment to enable naxsi on this location
+		# Uncomment to enable naxsi on this location
                 # include /etc/nginx/naxsi.rules
 
         }
 
-        location /diffs {
+	location /diffs {
                 try_files $uri $uri/ =404;
                 autoindex on;
                 # Uncomment to enable naxsi on this location
                 # include /etc/nginx/naxsi.rules
         }
 
-        location /exports {
-        try_files $uri $uri/ =404;
-        autoindex on;
-        # Uncomment to enable naxsi on this location
-        # include /etc/nginx/naxsi.rules
+        location /accounting {
+                try_files $uri $uri/ =404;
+                autoindex on;
+                # Uncomment to enable naxsi on this location
+                # include /etc/nginx/naxsi.rules
         }
+
+	location /exports {
+		try_files $uri $uri/ =404;
+        	autoindex on;
+        	# Uncomment to enable naxsi on this location
+        	# include /etc/nginx/naxsi.rules
+	}
 
 }
 #this last bracket is needed to close this vhost
