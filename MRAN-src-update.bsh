@@ -54,18 +54,21 @@ CURRENT=$(tail -n 1 /tmp/src-tempdiffs.txt)
 #define www home, no root slash
 WWW_HOME="MRAN/www"
 
+#define year for diff files
+YEAR=$(date +"%Y")
+
 #RUN THE DIFF
 #use the variables created above to compare the last two snapshots, send to the public facing diffs directory
 
-echo "Diffed Snapshots:" > /$WWW_HOME/diffs/src/$DATE.txt
+echo "Diffed Snapshots:" > /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
-echo $LAST >> /$WWW_HOME/diffs/src/$DATE.txt
+echo $LAST >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
 echo $CURRENT >> /$WWW_HOME/diffs/src/$DATE.txt
 
-echo "Diff Contents:" >> /$WWW_HOME/diffs/src/$DATE.txt
+echo "Diff Contents:" >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
-sudo zfs diff $LAST $CURRENT >> /$WWW_HOME/diffs/src/$DATE.txt
+sudo zfs diff $LAST $CURRENT >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
 #update space accounting info page at the end
 /home/rrt-user/accounting.bsh
@@ -74,5 +77,5 @@ sudo zfs diff $LAST $CURRENT >> /$WWW_HOME/diffs/src/$DATE.txt
 cd $HOME
 /usr/local/bin/Rscript mran_metadata.R
 
-#run the space accounting script
-/home/rrt-user/accounting.bsh
+#run the source space accounting script
+/home/rrt-user/accounting-src.bsh
