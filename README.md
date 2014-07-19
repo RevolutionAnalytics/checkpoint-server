@@ -14,9 +14,8 @@ work on any platform that support ZFS.
 * Make sure that you have read file **MRAN-server-overview.md** in the docs
 directory. It will brief you on the structure and concepts of a MRAN server.
 
-* You should be able to commit around 100GB to a MRAN server to get started.
-Optionally you could start smaller, around 50GB and grow your MRAN pool over
-time as disk space is needed.  
+* You should be able to commit at least 100GB of disk space to a MRAN server to
+get started. You can grow your MRAN pool over time as disk space is needed.  
 
 * **Migration and backup:** The `zfs send` command can be used to safely
 migrate a MRAN server zpool or FS from one disk(s) to another larger set maintaining
