@@ -29,7 +29,7 @@ cd /$STAGING_HOME
 #You will get warnings about dirs that already exist
 for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); mkdir /$MRAN_HOME/$dirname; done
 
-#part FOUR, copy the files with rsync from local staging area to respective dirs in MRAN_HOME, preserving the original timestamps 
+#part FOUR, copy the files with rsync from local staging area to respective dirs in MRAN_HOME, preserving the original timestamps
 for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); rsync -rt --ignore-existing $file /$MRAN_HOME/$dirname/; done
 
 
@@ -64,7 +64,7 @@ echo "Diffed Snapshots:" > /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
 echo $LAST >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
-echo $CURRENT >> /$WWW_HOME/diffs/src/$DATE.txt
+echo $CURRENT >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
 echo "Diff Contents:" >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
