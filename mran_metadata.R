@@ -1,4 +1,4 @@
-# /usr/bin Rscript
+#!/usr/local/bin/Rscript
 
 ## Generate metadata for marmoset server
 # Load packages
@@ -48,7 +48,7 @@ current_osx <- function(pkg, ver){
 }
 
 getmessage <- function(pkg){
-	tmp <- readLines(sprintf("/MRAN/www/diffs/src/RRT_%s.txt", dirtoget))
+	tmp <- readLines(sprintf("/MRAN/www/diffs/src/%s.txt", dirtoget))
   tmp <- tmp[grep("\\+", tmp)]
   tmp <- gsub(".+/", "", tmp[grep("tar.gz", tmp)])
   tmp <- unlist(lapply(tmp, function(x) { bb = strsplit(x, "_")[[1]][[1]]; names(x) <- bb; as.list(x) }))
@@ -93,7 +93,7 @@ allpkgs <- lapply(aslist, function(x){
     description = x$description,
     snapshotId = dirtoget,
     snapshotDate = dirtoget,
-    snapshotDiffId = sprintf("RRT_%s.txt", dirtoget),
+    snapshotDiffId = sprintf("%s.txt", dirtoget),
     compatibitlityCheck = NULL,
     message = getmessage(x$package),
     source = list(baseurl = sprintf("http://mran.revolutionanalytics.com/snapshots/src/%s/%s/", dirtoget, x$package),
