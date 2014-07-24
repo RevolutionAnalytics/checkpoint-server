@@ -1,6 +1,6 @@
 #mran.revolutionanalytics.com
 #Chris Mosetick 2014-06-12
-#last update    2014-07-19
+#last update    2014-07-24
 
 server {
         #listen on IPv4 and IPv6 addresses at the same time
@@ -9,7 +9,7 @@ server {
 
         #directory in the file system to serve web pages and packages from
         #this is a detachable block disk formatted with ZFS that can be easily moved to another server
-	#www dir is for landing page stuff
+	      #www dir is for landing page stuff
         root /MRAN/www;
         index index.html index.htm;
 
@@ -50,11 +50,12 @@ server {
         }
 
         location /history {
+
                 try_files $uri $uri/ =404;
                 autoindex on;
                 # Uncomment to enable naxsi on this location
                 # include /etc/nginx/naxsi.rules
-                #history is symlink poiniting to snapshots of the /MRAN/www FS itself
+                #history is symlink pointing to snapshots of the /MRAN/www FS itself
                 #this URL is hidden right now, not on index.html
         }
 
@@ -63,8 +64,7 @@ server {
         	      autoindex on;
         	      # Uncomment to enable naxsi on this location
         	      # include /etc/nginx/naxsi.rules
-                #exports is symlink pointing to zpool named "exports"
-	}
+
 
 }
 #this last bracket is needed to close this vhost
