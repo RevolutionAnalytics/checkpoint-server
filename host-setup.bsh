@@ -90,6 +90,11 @@ sed -i 's;# RSYNC_CONFIG_FILE=;RSYNC_CONFIG_FILE=/etc/rsyncd.conf;' /etc/default
 cp rsyncd.conf /etc/rsyncd.conf
 
 
+#Nginx stuff
+cd /etc/nginx/sites-enabled
+ln -s /etc/nginx/sites-available/mran.revolutionanalytics.com mran.revolutionanalytics.com
+
+
 #configure unattended system upgrades
 #set to 'yes' or 'on'
 #dpkg-reconfigure unattended-upgrades
