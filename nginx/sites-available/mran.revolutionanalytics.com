@@ -1,6 +1,6 @@
 #mran.revolutionanalytics.com
 #Chris Mosetick 2014-06-12
-#last update    2014-07-19
+#last update    2014-07-24
 
 server {
         #listen on IPv4 and IPv6 addresses at the same time
@@ -42,6 +42,13 @@ server {
         }
 
         location /accounting {
+                try_files $uri $uri/ =404;
+                autoindex on;
+                # Uncomment to enable naxsi on this location
+                # include /etc/nginx/naxsi.rules
+        }
+
+	location /history {
                 try_files $uri $uri/ =404;
                 autoindex on;
                 # Uncomment to enable naxsi on this location
