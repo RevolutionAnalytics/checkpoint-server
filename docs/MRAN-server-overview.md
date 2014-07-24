@@ -1,17 +1,21 @@
 * [What is MRAN?](#whatismran)
 * [MRAN](#indetail)
+* [Structure](#structure)
 * [How are snapshots created?](#snapshots)
 * [Important note regarding dates](#dates)
 * [Difference between snapshots of MRAN](#diffsnaps)
 * [Metadata and RRT integration](#metadatarrt)
 
 ### <a href="#whatismran" name="whatismran">#</a> What is MRAN?
-MRAN is a server side component that works hand-in-hand with the client side
-RRT package.
-The goal of MRAN is to:
-* Organize better the various places that R packages live on CRAN.
+MRAN is a server side component with snapshot capabilities that works hand-in-hand
+with the client side [RRT package](http://revolutionanalytics.github.io/RRT).  
+
+Some of the main goals of MRAN:
+* Better organize the various places that R packages live on CRAN.
 * Add point-in-time capabilities via snapshots allowing more precision for reproducibility.
-* Seperate data from metadata (data describing data)
+* Separate data from metadata (data describing data)
+* Default repository for Marmoset distribution.
+* Optional drop-in replacement for standard CRAN mirror. (with snapshots)
 
 ### <a href="#indetail" name="indetail">#</a> In detail - MRAN (Modern R Archive Network)
 MRAN is downstream snapshot of CRAN. One of the main differentiations of MRAN to CRAN
@@ -34,9 +38,22 @@ The core features of the [RRT](http://revolutionanalytics.github.io/RRT) package
 combined with the MRAN server backend frees a user from having to keep track of
 package versions and R versions if they want others to be able to reproduce their work.
 
-MRAN snapshots combined with the RRT front end are in essence a trace back mechanism
+By focusing on a MRAN snapshot date, rather than version numbers of any number
+of packages and R versions, a user is given the freedom to work on their project
+without fear that their hard work will be rendered irreproducible by updates to
+R or packages by authors.
+
+MRAN combined with the RRT front end are in essence a trace back mechanism
 so users will have a way to go back to the version of a package that they were
 working on at a point in time.
+
+Additionally by using these tools, a user can work on multiple projects at the
+same time, with each project pointing to different MRAN snapshots. A user can
+refresh their client side RRT project directory to a newer snapshot whenever they
+choose, or optionally freeze time and keep working off a older snapshot indefinitely.
+
+
+### <a href="#structure">#</a> Structure
 
 Each MRAN snapshot holds all source versions of a package in the same
 per-package directory on the MRAN server.  
@@ -44,8 +61,10 @@ i.e. [http://mran.revolutionanalytics.com/snapshots/src/2014-06-20_0500/zoo/](ht
 
 Binary package snapshots are stored on a per platform basis, as they would be on CRAN.
 Note that for binary packages MRAN is only taking snapshots of R-release (current stable).
-i.e. The zoo package on 23 July 2014 is compiled using R-release 3.1.
+i.e. The zoo package on 23 July 2014 is compiled using R-release 3.1.  
+
 [http://mran.revolutionanalytics.com/snapshots/bin/macosx/2014-07-23_0500/zoo_1.7-11.tgz](http://mran.revolutionanalytics.com/snapshots/bin/macosx/2014-07-23_0500/zoo_1.7-11.tgz)
+
 
 ### <a href="#snapshots" name="snapshots">#</a> How are snapshots created?
 Snapshots are created using [ZFS](http://open-zfs.org/wiki/Main_Page).
@@ -57,11 +76,13 @@ has a wide range of contributors and sponsors that comprise its ecosystem.
 ZFS was chosen as the server side snapshot method for MRAN as it works on the block level,
 not the file level like many other tools. It is efficient for storing compressed binary
 files like .tar.gz or .zip, unlike SCM tools such as git, mercurial or subversion.
+
 ZFS is very space efficient: ZFS snapshots are immutable objects that only take up the amount of
 space that has changed between the snapshot and the 'live' file system. i.e.
-very small when looking at the daily churn of R packages, but great space
+very small when looking at the daily churn of updates to R packages, but great space
 savings when looking at the ecosystem of packages hosted on CRAN as a whole
 over the course of a year.  
+
 Note that backend processes work on the "live" file system, so for reproducibility MRAN always
 serves up snapshots. A [RRT](http://revolutionanalytics.github.io/RRT) user pointing to MRAN never
 see's the "live" file system.

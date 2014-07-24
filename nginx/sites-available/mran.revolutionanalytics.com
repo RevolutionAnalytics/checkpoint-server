@@ -23,18 +23,19 @@ server {
                 autoindex  on;
                 # Uncomment to enable naxsi on this location
                 # include /etc/nginx/naxsi.rules
+                #snapshots is directory containing symlinks to various .zfs/snapshot dirs
         }
 
 
         location /metadata {
                 try_files $uri $uri/ =404;
                 autoindex on;
-		# Uncomment to enable naxsi on this location
+		            # Uncomment to enable naxsi on this location
                 # include /etc/nginx/naxsi.rules
 
         }
 
-	location /diffs {
+        location /diffs {
                 try_files $uri $uri/ =404;
                 autoindex on;
                 # Uncomment to enable naxsi on this location
@@ -48,11 +49,21 @@ server {
                 # include /etc/nginx/naxsi.rules
         }
 
-	location /exports {
-		try_files $uri $uri/ =404;
-        	autoindex on;
-        	# Uncomment to enable naxsi on this location
-        	# include /etc/nginx/naxsi.rules
+        location /history {
+                try_files $uri $uri/ =404;
+                autoindex on;
+                # Uncomment to enable naxsi on this location
+                # include /etc/nginx/naxsi.rules
+                #history is symlink poiniting to snapshots of the /MRAN/www FS itself
+                #this URL is hidden right now, not on index.html
+        }
+
+        location /exports {
+		            try_files $uri $uri/ =404;
+        	      autoindex on;
+        	      # Uncomment to enable naxsi on this location
+        	      # include /etc/nginx/naxsi.rules
+                #exports is symlink pointing to zpool named "exports"
 	}
 
 }
