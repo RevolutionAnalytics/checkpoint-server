@@ -9,7 +9,7 @@ server {
 
         #directory in the file system to serve web pages and packages from
         #this is a detachable block disk formatted with ZFS that can be easily moved to another server
-	#www dir is for landing page stuff
+	      #www dir is for landing page stuff
         root /MRAN/www;
         index index.html index.htm;
 
@@ -50,7 +50,7 @@ server {
         }
 
         location /history {
-		try_files $uri $uri/ =404;
+		            try_files $uri $uri/ =404;
                 autoindex on;
                 # Uncomment to enable naxsi on this location
                 # include /etc/nginx/naxsi.rules
@@ -59,12 +59,12 @@ server {
         }
 
         location /exports {
-		try_files $uri $uri/ =404;
-        	autoindex on;
-        	# Uncomment to enable naxsi on this location
-        	# include /etc/nginx/naxsi.rules
-		#exports is symlink to zpool named exports
-	}
+		            try_files $uri $uri/ =404;
+        	      autoindex on;
+        	      # Uncomment to enable naxsi on this location
+        	      # include /etc/nginx/naxsi.rules
+		            #exports is symlink to zpool named exports
+	      }
 
 }
 #this last bracket is needed to close this vhost
