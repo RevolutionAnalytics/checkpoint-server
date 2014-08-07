@@ -93,7 +93,11 @@ cp rsyncd.conf /etc/rsyncd.conf
 
 #Nginx stuff
 cp nginx/sites-available/mran.revolutionanalytics.com /etc/nginx/sites-available/
-rm /etc/nginx/sites-available/default
+
+#remove symlink enabling default vhost
+rm etc/nginx/sites-enabled/default
+
+#create symlink to our vhost file
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/mran.revolutionanalytics.com mran.revolutionanalytics.com
 
