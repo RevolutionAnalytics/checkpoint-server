@@ -30,7 +30,7 @@ aptitude update
 
 #install the packages we need for this server
 #zfs kernel modules will take a long time to build, be patient
-aptitude install ubuntu-zfs nginx-full ntp git at htop screen
+aptitude install -y ubuntu-zfs nginx-full ntp git at htop screen
 
 modprobe zfs
 dmesg | grep ZFS
@@ -56,6 +56,7 @@ ufw allow 873/tcp
 zpool create MRAN /dev/xvdb
 ##################################
 
+zpool set autoexpand=on MRAN
 zfs set atime=off MRAN
 zfs set compression=lzjb MRAN
 zfs create MRAN/packages
@@ -91,6 +92,7 @@ cp rsyncd.conf /etc/rsyncd.conf
 
 
 #Nginx stuff
+cp nginx/sites-available/mran.revolutionanalytics.com /etc/nginx/sites-available/
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/mran.revolutionanalytics.com mran.revolutionanalytics.com
 
