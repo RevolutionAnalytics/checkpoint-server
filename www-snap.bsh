@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#rrt-user account works with dates and times in UTC via ~/.profile, we set it again here so that is made clear
+export TZ="UTC"
+
+#use ISO standard for date, underscore for date time seperator, no colon for hour minute seperation
+#example: 2014-06-16_2300
+DATE=$(date +"%Y-%m-%d_%H%M")
+
+sudo zfs snapshot MRAN/www@$DATE
