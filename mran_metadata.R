@@ -28,7 +28,7 @@ geturlsdf <- function(x){
   vapply(apply(x, 1, as.list), make_url, "")
 }
 
-### some funcctions to use below
+### some functions to use below
 current_windows <- function(pkg, ver){
   uri <- 'http://cran.r-project.org/bin/windows/contrib/%s/%s_%s.zip'
   list(
@@ -48,7 +48,7 @@ current_osx <- function(pkg, ver){
 }
 
 getmessage <- function(pkg){
-	tmp <- readLines(sprintf("/MRAN/www/diffs/src/%s.txt", dirtoget))
+	tmp <- readLines(sprintf("/MRAN/www/diffs/src/2014/%s.txt", dirtoget))
   tmp <- tmp[grep("\\+", tmp)]
   tmp <- gsub(".+/", "", tmp[grep("tar.gz", tmp)])
   tmp <- unlist(lapply(tmp, function(x) { bb = strsplit(x, "_")[[1]][[1]]; names(x) <- bb; as.list(x) }))

@@ -75,10 +75,6 @@ zfs create MRAN/bioc/bin
 #zpool create exports /dev/xvdd
 
 
-#add rrt-user account for running MRAN update scripts
-adduser --disabled-password --gecos "" mran-user
-
-
 #create symbolic link to packages file system snapshot directory
 cd /MRAN/www
 ln -s /MRAN/packages/.zfs/snapshot/ snapshots
@@ -90,7 +86,6 @@ sed -i 's;# RSYNC_CONFIG_FILE=;RSYNC_CONFIG_FILE=/etc/rsyncd.conf;' /etc/default
 #copy our config file to /etc
 cp rsyncd.conf /etc/rsyncd.conf
 
-
 #Nginx stuff
 cp nginx/sites-available/mran.revolutionanalytics.com /etc/nginx/sites-available/
 
@@ -100,6 +95,15 @@ rm etc/nginx/sites-enabled/default
 #create symlink to our vhost file
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/mran.revolutionanalytics.com mran.revolutionanalytics.com
+
+#add mran-user account for running MRAN update scripts
+adduser --disabled-password --gecos "" mran-user
+
+#add mran-user to adm group
+usermod -aG adm mran-user
+
+#update sudoers file
+echo "%adm ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 
 #configure unattended system upgrades
