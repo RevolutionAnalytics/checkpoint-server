@@ -102,4 +102,4 @@ sudo zfs diff $LASTLIN $CURRENTLIN >> $WWW_HOME/diffs/bin/linux/$YEAR/$DATE.txt
 #/usr/local/bin/Rscript mran_metadata.R
 
 #run the binary space accounting script
-/home/rrt-user/accounting-bin.bsh
+$HOME/src/MRAN/accounting-bin.bsh

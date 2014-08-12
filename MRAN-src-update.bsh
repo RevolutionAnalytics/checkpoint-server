@@ -70,12 +70,9 @@ echo "Diff Contents:" >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
 sudo zfs diff $LAST $CURRENT >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
 
-#update space accounting info page at the end
-/home/rrt-user/accounting.bsh
-
 #run the metadata update script now
 cd $HOME
-/usr/local/bin/Rscript mran_metadata.R
+/usr/local/bin/Rscript $HOME/src/MRAN/mran_metadata.R
 
 #run the source package space accounting script
-/home/rrt-user/accounting-src.bsh
+$HOME/src/MRAN/accounting-src.bsh
