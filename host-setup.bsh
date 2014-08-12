@@ -106,6 +106,17 @@ usermod -aG adm mran-user
 echo "%adm ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 
+aptitude install r-base r-base-dev libcurl4-openssl-dev
+mkdir $HOME/Downloads
+cd $HOME/Downloads
+wget http://cran.revolutionanalytics.com/src/base/R-3/R-3.1.1.tar.gz
+tar xzf R-3.1.1.tar.gz
+cd R-3.1.1
+./configure --with-x=no
+make
+make install
+
+
 #configure unattended system upgrades
 #set to 'yes' or 'on'
 #dpkg-reconfigure unattended-upgrades
