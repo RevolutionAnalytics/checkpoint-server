@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#update MRAN once a day, every day of the week
+
+#source
+$HOME/src/MRAN/MRAN-src-update.bsh > /dev/null 2>&1
+
+#binary
+$HOME/src/MRAN/MRAN-bin-update.bsh > /dev/null 2>&1
+
+#snapshot the WWW_HOME dir 10 after
+$HOME/src/MRAN/www-snap.bsh > /dev/null 2>&1
