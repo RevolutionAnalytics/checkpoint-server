@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Do standard CRAN rsync first
+$HOME/src/MRAN/cran-update.bsh > /dev/null 2>&1
+
 #update MRAN once a day, every day of the week
 
 #source

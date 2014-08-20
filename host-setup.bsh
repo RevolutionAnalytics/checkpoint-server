@@ -19,7 +19,7 @@
 #set your time manually with ntpdate before installing the ntpd service
 ntpdate 0.ubuntu.pool.ntp.org
 
-#add the required package repositories
+#add the required system package repositories
 aptitude update
 aptitude safe-upgrade -y
 aptitude install -y python3-software-properties
@@ -74,10 +74,15 @@ zfs create MRAN/bioc/bin
 #create a seperate zpool for storing exports of MRAN file systems
 #zpool create exports /dev/xvdd
 
-
-#create symbolic link to packages file system snapshot directory
+#create symbolic links to packages file systems snapshot directory
 cd /MRAN/www
-ln -s /MRAN/packages/.zfs/snapshot/ snapshots
+mkdir snapshots
+cd snapshots
+ln -s /MRAN/packages/src/.zfs/snapshot/ src
+mkdir bin
+ln -s /MRAN/packages/win/.zfs/snapshot/ win
+ln -s /MRAN/packages/macosx/.zfs/snapshot/ macosx
+ln -s /MRAN/packages/linux/.zfs/snapshot/ linux
 
 #turn on rsync deamon and set some options
 sed -i 's;RSYNC_ENABLE=false;RSYNC_ENABLE=true;' /etc/default/rsync
@@ -115,6 +120,15 @@ cd R-3.1.1
 make
 make install
 
+
+
+#setting up for standard cran mirror
+zfs create -o mountpoint=/cran MRAN/cran
+chown -R mran-user:mran-user /cran
+#rsync -rtlzv --delete cran.r-project.org::CRAN /cran/
+cp nginx/sites-available/cran.revolutionanalytics.com /etc/nginx/sites-available/
+cd /etc/nginx/sites-enabled
+ln -s /etc/nginx/sites-available/cran.revolutionanalytics.com cran.revolutionanalytics.com
 
 
 
