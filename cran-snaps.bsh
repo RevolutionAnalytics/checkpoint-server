@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#mran-user account works with dates and times in UTC
+export TZ="UTC"
+
+#use ISO standard for date
+#example: 2014-06-16_2300
+DATE=$(date +"%Y-%m-%d")
+
+
+rsync -rtlzv --delete cran.r-project.org::CRAN /cran/
+sudo zfs snapshot MRAN/cran@$DATE
