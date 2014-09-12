@@ -14,6 +14,7 @@ message("Merging packages and views")
 mpkg <- merge(pkgs, views, all.x = TRUE, by = "Package")
 mpkg[["Popularity"]] <- 0
 mpkg[["Title"]] <- gsub("\n", " ", mpkg[["Title"]])
+names(mpkg) <- gsub(" ", "_", names(mpkg))
 
 
 # Create subset for all packages page -------------------------------------
