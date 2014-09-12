@@ -1,6 +1,6 @@
 
-source("0-shared-scripts.R")
-source("0-config.R")
+# source("0-shared-scripts.R")
+# source("0-config.R")
 
 
 # Download packages from MRAN snapshot ------------------------------------
@@ -26,15 +26,17 @@ apData <- mpkg[, apCols]
 # Export overview data to json --------------------------------------------
 
 message("Exporting json")
-apJson  <-  toJSON(apData, pretty=TRUE)
+apJson  <-  toJSON(list(data=apData), pretty=TRUE)
 write(apJson, file=allPackagesJson)
 
 
 # Export individual package files to json ---------------------------------
 
 message("Exporting individual package json")
-for(i in seq(nrow(mpkg))){
-  pkgJson <- toJSON(mpkg[i, ], pretty=TRUE)
+
+pkgsToInclude <- seq(nrow(mpkg))
+for(i in pkgsToInclude){
+  pkgJson <- toJSON(list(data=mpkg[i, ]), pretty=TRUE)
   write(pkgJson, file=file.path(json_output, paste0(apData$Package[i], ".json")))
 }
 
