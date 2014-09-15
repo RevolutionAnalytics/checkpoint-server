@@ -19,6 +19,8 @@
 #set your time manually with ntpdate before installing the ntpd service
 ntpdate 0.ubuntu.pool.ntp.org
 
+deluser ubuntu
+
 #add the required system package repositories
 aptitude update
 aptitude safe-upgrade -y
