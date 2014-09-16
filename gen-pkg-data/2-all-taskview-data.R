@@ -1,6 +1,6 @@
 
-source("0-shared-scripts.R")
-source("0-config.R")
+# source("0-shared-scripts.R")
+# source("0-config.R")
 
 
 # Download taskviews from MRAN snapshot ----------------------------
@@ -26,8 +26,7 @@ overview <- do.call(rbind,
 dim(overview)
 
 # Export to json ----------------------------------------------------------
-
-viewJson  <-  toJSON(overview, pretty=TRUE)
+viewJson  <-  toJSON(list(data=overview), pretty=TRUE)
 write(viewJson, file=allTaskviewJson)
 
 
