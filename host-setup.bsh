@@ -61,6 +61,7 @@ zpool create MRAN /dev/xvdb
 zpool set autoexpand=on MRAN
 zfs set atime=off MRAN
 zfs set compression=lzjb MRAN
+zfs create MRAN/cran -o mountpoint=/cran
 zfs create MRAN/packages
 zfs create MRAN/packages/src
 zfs create MRAN/packages/bin
