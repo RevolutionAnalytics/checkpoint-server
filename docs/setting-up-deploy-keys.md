@@ -10,14 +10,16 @@ or this
 account for advanced source control management when working with git repos that
 are part of a Github.com Organization account.  
 -When a local machine account may need to be shared with multiple users, and is
-typically used for unattended automation and running scripts from CI, cron, etc.
+typically used for unattended automation and running scripts from CI, cron, etc.  
+-When you can not or do not want to have a different local user account for each
+repo you are working with.
 
 ###This document describes how to do this for 2 repos, but you can have as many as needed.
 
 
+
 ## Part 1 - Getting Started with the key generation
-While logged into the user account that will do the work
-"mran-user" in this case.
+sign into the user account that will do the work "mran-user" in this case.
 
 `ssh-keygen -t ecdsa -b 521 -C "MRAN-site@revolutionanalytics.com"`  
 Set the output of the key file to be:  
@@ -29,9 +31,9 @@ Set the output of the key file to be:
 `$HOME/.ssh/OSS-site-ecdsa`  
 note, do not set a passphrase.
 
+Copy the public half of each key to your clipboard, one at a time.
 `cat ~/.ssh/MRAN-site-ecdsa.pub`  
 `cat ~/.ssh/OSS-site-ecdsa.pub`  
-Copy the public half of each key to your clipboard, one at a time.
 
 Now open the repo in your web browser, on the right side click on settings.
 
@@ -45,7 +47,8 @@ Now this is the tricky part.
 2.1 You need to make sure that the user account is configured to use ssh for git operations.  
 e.g. the remote URL in the repos .git/config needs to be set for ssh rather than https:  
 
-2.2 You need to add an extra piece of info after the .com in the remote origin URL. (-MRAN-site OR -OSS-site)
+2.2 You need to add an extra piece of info after the .com in the remote origin URL.  
+(-MRAN-site OR -OSS-site) This is very important for later on.
 
 Look carefully here, notice the dash and text after the .com:  
 `git@github.com-MRAN-site:RA-Internal/MRAN-site.git`
@@ -69,7 +72,8 @@ git config user.email "OSS-site@revolutionanalytics.com"
 
 ## Part 3 - Adding a $HOME/.ssh/config file  
 
-You will need to make sure that you have a properly configured personal ssh config file for the mran-user account for this to work correctly.  
+You will need to make sure that you have a properly configured personal ssh
+config file for the mran-user account for this to work correctly.  
 Here is what the `$HOME/.ssh/config` should look like for this example:  
 
 `cd $HOME/.ssh`  
@@ -82,7 +86,7 @@ Here is what the `$HOME/.ssh/config` should look like for this example:
 Host github.com-MRAN-site
     HostName github.com
     User git
-    IdentityFile ~/.ssh/MRAN-site-ecsda
+    IdentityFile ~/.ssh/MRAN-site-ecdsa
 
 #OSS-site repo
 Host github.com-OSS-site
@@ -91,6 +95,23 @@ Host github.com-OSS-site
     IdentityFile ~/.ssh/OSS-site-ecdsa
 ```
 
-## Part 4 - testing
+## Part 4 - Testing
 Test this all out by manually cd'ing to each repo and running `git pull`  
-If things are setup correctly you will not be prompted for any thing.
+If things are setup correctly you will not be prompted for anything.
+
+There are other tests that will give good output.  
+In each repo run:  
+`ssh git@github.com-MRAN-site`  
+`ssh git@github.com-OSS-site`  
+
+If you have set things up correctly you should see a success message for each
+repo you setup.  
+```
+ssh git@github.com-MRAN-site
+PTY allocation request failed on channel 0
+Hi RA-Internal/MRAN-site! You've successfully authenticated, but GitHub does not
+provide shell access.
+Connection to github.com closed.
+```
+
+You are all set now.
