@@ -28,11 +28,12 @@ aptitude install -y python3-software-properties
 add-apt-repository --yes ppa:nginx/stable
 add-apt-repository --yes ppa:git-core
 add-apt-repository --yes ppa:zfs-native/stable
+add-apt-repository --yes ppa:chris-lea/node.js
 aptitude update
 
 #install the packages we need for this server
 #zfs kernel modules will take a long time to build, be patient
-aptitude install -y ubuntu-zfs nginx-full ntp git at htop screen
+aptitude install -y ubuntu-zfs nodejs nginx-full ntp git at htop screen
 
 modprobe zfs
 dmesg | grep ZFS
@@ -61,7 +62,6 @@ zpool create MRAN /dev/xvdb
 zpool set autoexpand=on MRAN
 zfs set atime=off MRAN
 zfs set compression=lzjb MRAN
-zfs create MRAN/cran -o mountpoint=/cran
 zfs create MRAN/packages
 zfs create MRAN/packages/src
 zfs create MRAN/packages/bin
