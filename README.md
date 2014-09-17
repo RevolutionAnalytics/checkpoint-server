@@ -1,9 +1,13 @@
 MRAN
 ====
 
-Modern R Archive Network
+~~Modern~~ Managed R Archive Network
 
-#### Downstream [CRAN](http://cran.r-project.org/) server with snapshot capabilities + advanced metadata from [RRT](http://revolutionanalytics.github.io/RRT)
+#### Downstream [CRAN](http://cran.r-project.org/) server with snapshot capabilities + advanced metadata.  
+
+Works in concert with [RRT](http://github.com/RevolutionAnalytics/RRT) Package.
+
+MRAN web site code is currently located at: http://github.com/RA-Internal/MRAN-site 
 
 * To get started creating a MRAN server, clone this repository to your server
 candidate.
