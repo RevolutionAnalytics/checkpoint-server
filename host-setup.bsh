@@ -103,6 +103,7 @@ rm etc/nginx/sites-enabled/default
 #create symlink to our vhost file
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/mran.revolutionanalytics.com mran.revolutionanalytics.com
+ln -s /etc/nginx/sites-available/projects.revolutionanalytics.com projects.revolutionanalytics.com
 
 #add mran-user account for running MRAN update scripts
 adduser --disabled-password --gecos "" mran-user
