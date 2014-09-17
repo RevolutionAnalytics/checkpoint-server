@@ -97,10 +97,10 @@ cp rsyncd.conf /etc/rsyncd.conf
 #Nginx stuff
 cp nginx/sites-available/mran.revolutionanalytics.com /etc/nginx/sites-available/
 
-#remove symlink enabling default vhost
-rm etc/nginx/sites-enabled/default
+#remove symlink for unused default vhost
+rm /etc/nginx/sites-enabled/default
 
-#create symlink to our vhost file
+#create symlink to our vhost files
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/mran.revolutionanalytics.com mran.revolutionanalytics.com
 ln -s /etc/nginx/sites-available/projects.revolutionanalytics.com projects.revolutionanalytics.com
@@ -125,15 +125,29 @@ make
 make install
 
 
+####Setting up for standard cran mirror####
 
-#setting up for standard cran mirror
+#this is for cran.revolutionanalytics.com
 zfs create -o mountpoint=/cran MRAN/cran
+
+#this is for cran-snapshots.revolutionanalytics.com
+zfs create -o mountpoint=/cran-www MRAN/cran-www
+
+#set some permissions for the /cran mountpoint
 chown -R mran-user:mran-user /cran
+
 #rsync -rtlzv --delete cran.r-project.org::CRAN /cran/
 cp nginx/sites-available/cran.revolutionanalytics.com /etc/nginx/sites-available/
+cp nginx/sites-available/cran-snapshots.revolutionanalytics.com /etc/nginx/sites-available/
+
+#make symlinks for turning on Nginx configs
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/cran.revolutionanalytics.com cran.revolutionanalytics.com
+ln -s /etc/nginx/sites-available/cran-snapshots.revolutionanalytics.com cran-snapshots.revolutionanalytics.com
 
+#Make a symlink to serve snapshots at cran-snapshots.revolutionanalytics.com
+cd /cran-www
+sudo ln -s /cran/.zfs/snapshot/ snapshots
 
 
 #configure unattended system upgrades
