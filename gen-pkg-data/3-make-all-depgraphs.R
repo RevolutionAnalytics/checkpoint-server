@@ -4,15 +4,15 @@ library(iterators)
 library(doParallel)
 library(miniCRAN)
 
-source("0-shared-scripts.R")
-source("0-config.R")
+# source("0-shared-scripts.R")
+# source("0-config.R")
 
 
 # Download packages from MRAN snapshot ------------------------------------
 
 pkgs <- getPackages(repos = snapshot_url)
 
-pkgs <- pkgs[1:16, ]
+pkgs <- pkgs[1:16, ]   ###   <<<<<===== Remove this for production
 
 cl <- makeCluster(4)
 registerDoParallel(cl)
