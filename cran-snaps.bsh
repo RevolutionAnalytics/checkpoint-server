@@ -11,3 +11,4 @@ DATE=$(date +"%Y-%m-%d")
 rsync -rtlzv --delete cran.r-project.org::CRAN /cran/
 sleep 5
 sudo zfs snapshot MRAN/cran@$DATE
+$HOME/gen-pkg-data/doit.R
