@@ -7,7 +7,7 @@ export TZ="UTC"
 
 #use ISO standard for date, underscore for date time seperator, no colon for hour minute seperation
 #example: 2014-06-16_2300
-DATE=$(date +"%Y-%m-%d_%H%M")
+DATE=$(date +"%Y-%m-%d")
 
 #SETUP THE RSYNC
 MRAN_HOME="MRAN/packages/bin"
@@ -20,11 +20,11 @@ STAGING_HOME="/MRAN/staging/bin"
 
 #part ONE, get all windows binaries for R 3.1
 # bin/windows/contrib/checkSummaryWin.html
-rsync -rtzv --delete --exclude=stats cran.r-project.org::CRAN/bin/windows/contrib/3.1/ /$WIN_HOME > /tmp/MRAN-windows-bin3.1-rsync-download.log
+rsync -rtzv --delete --exclude=stats /cran/bin/windows/contrib/3.1/ /$WIN_HOME > /tmp/MRAN-windows-bin3.1-rsync-download.log
 #part TWO, get all Mac OS X binaries for R 3.1, Mavericks 10.9+ build
-rsync -rtzv --delete cran.r-project.org::CRAN/bin/macosx/mavericks/contrib/3.1/ /$MAC_HOME > /tmp/MRAN-macosx-bin3.1-rsync-download.log
+rsync -rtzv --delete /cran/bin/macosx/mavericks/contrib/3.1/ /$MAC_HOME > /tmp/MRAN-macosx-bin3.1-rsync-download.log
 #part THREE, get all Linux binaries for current date
-rsync -rtzv --delete cran.r-project.org::CRAN/bin/linux/ /$LIN_HOME > /tmp/MRAN-linux-bin-rsync-download.log
+rsync -rtzv --delete /cran/bin/linux/ /$LIN_HOME > /tmp/MRAN-linux-bin-rsync-download.log
 
 #part THREE, create a directory for all current packages that do not already have a dir in MRAN.
 #cd $STAGING_HOME
@@ -36,7 +36,9 @@ rsync -rtzv --delete cran.r-project.org::CRAN/bin/linux/ /$LIN_HOME > /tmp/MRAN-
 
 #take a new snapshot after the rsync process is finished
 #use date format for snapshot name
-sudo zfs snapshot -r $MRAN_HOME@$DATE
+sudo zfs snapshot $WIN_HOME@$DATE
+sudo zfs snapshot $MAC_HOME@$DATE
+sudo zfs snapshot $LIN_HOME@$DATE
 
 #SETUP THE DIFFS
 #ignore warning about this directory already existing

@@ -7,7 +7,7 @@ export TZ="UTC"
 
 #use ISO standard for date, underscore for date time seperator, no colon for hour minute seperation
 #example: 2014-06-16_2300
-DATE=$(date +"%Y-%m-%d_%H%M")
+DATE=$(date +"%Y-%m-%d")
 
 #SETUP THE RSYNC
 #define MRAN home, no root slash
@@ -19,10 +19,10 @@ STAGING_HOME="MRAN/staging/src"
 #create MRAN from the master CRAN server in Vienna
 
 #part ONE, create MRAN by getting all archived versions of all packages first. These are sorted into dirs by CRAN
-rsync -rtzv --exclude=README cran.r-project.org::CRAN/src/contrib/Archive/ /$MRAN_HOME/ > /tmp/MRAN-archive-rsync-download.log
+rsync -rtzv --exclude=README /cran/src/contrib/Archive/ /$MRAN_HOME/ > /tmp/MRAN-archive-rsync-download.log
 
 #part TWO, current package versions, stage into temporary holding dir
-rsync -rtzv --delete-before cran.r-project.org::CRAN/contrib/main/*.tar.gz /$STAGING_HOME/ > /tmp/MRAN-current-rsync-download.log
+rsync -rtzv --delete-before /cran/contrib/main/*.tar.gz /$STAGING_HOME/ > /tmp/MRAN-current-rsync-download.log
 
 #part THREE, create a directory for all current packages that do not already have a dir in MRAN.
 cd /$STAGING_HOME
