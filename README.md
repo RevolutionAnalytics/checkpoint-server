@@ -1,7 +1,7 @@
 MRAN
 ====
 
-~~Modern~~ Managed R Archive Network
+Managed R Archive Network
 
 #### Downstream [CRAN](http://cran.r-project.org/) server with snapshot capabilities + advanced metadata.  
 
