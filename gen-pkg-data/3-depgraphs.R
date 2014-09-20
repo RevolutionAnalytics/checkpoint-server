@@ -10,12 +10,15 @@ library(miniCRAN)
 
 # Download packages from MRAN snapshot ------------------------------------
 
-pkgs <- getPackages(repos = snapshot_url)
+# pkgs <- getPackages(repos = snapshot_url)
+pkgs <- getPackagesFromMRAN(cran = cran_uri)
 
-pkgs <- pkgs[1:16, ]   ###   <<<<<===== Remove this for production
+# pkgs <- pkgs[1:16, ]   ###   <<<<<===== Remove this for production
 
 cl <- makeCluster(4)
 registerDoParallel(cl)
+
+message("Creating dependency graphs")
 
 res <- foreach(p=iter(rownames(pkgs)),
                .packages = "miniCRAN",
@@ -23,11 +26,14 @@ res <- foreach(p=iter(rownames(pkgs)),
   makeDepGraph(p, availPkgs = pkgs)
 }
 
-# saveRDS(res, file="allDepGraphs.rds")
+saveRDS(res, file=file.path(pkg_output, "allDepGraphs.rds"))
+
+
+message("Plotting dependency graphs")
 
 plotOne <- function(i){
   plotName <- paste0(pkgs[, "Package"][i], ".png")
-  png(file.path(dep_plot_folder, plotName), width=800, height=600)
+  png(file.path(graph_output, plotName), width=800, height=600)
   plot(res[[i]])
   dev.off()
 }
@@ -38,3 +44,4 @@ system.time({
 
 
 stopCluster(cl)
+

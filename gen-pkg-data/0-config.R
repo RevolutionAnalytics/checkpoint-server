@@ -1,27 +1,27 @@
 # Configuration settings
 
-library(ctv)
-library(plyr)
-library(jsonlite)
-library(miniCRAN)
+suppressPackageStartupMessages({
+  library(ctv)
+  library(plyr)
+  library(jsonlite)
+  library(miniCRAN)
+})
 
 
-cran_uri <- "/cran/web/packages/"
+cran_uri <- "/cran/"
+
+cran_packages_uri <- "/cran/uri/web/packages/"
 packages_rds <- "/cran/web/packages/packages.rds"
 
-root_folder <- "../packagedata"
-json_folder <- "json"
-graph_folder <- "graphs"
+pkg_output   <- "../packagedata"
+json_output  <- "../packagedata/json"
+graph_output <- "../packagedata/graphs"
 
-allPackagesJson <- "allpackages.json"
-basePackagesJson <- "basepackages.json"
-allTaskviewJson <- "alltaskviews.json"
+allPackagesJson  <- "../packagedata/allpackages.json"
+basePackagesJson <- "../packagedata/basepackages.json"
+allTaskviewJson  <- "../packagedata/alltaskviews.json"
 
-json_output <- file.path(root_folder, json_folder)
-graph_output <- file.path(root_folder, graph_folder)
 
-allPackagesJson <- file.path(json_output, allPackagesJson)
-allTaskviewJson <- file.path(json_output, allTaskviewJson)
 
 
 
