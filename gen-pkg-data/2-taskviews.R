@@ -1,4 +1,4 @@
-source("0-config.R")
+# source("0-config.R")
 
 # Creating taskview data --------------------------------------------------
 

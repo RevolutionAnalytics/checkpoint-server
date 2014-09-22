@@ -53,7 +53,7 @@ vign_short <- list.files(cran_uri, recursive=TRUE, pattern="index.rds", full.nam
 vign_long  <- list.files(cran_uri, recursive=TRUE, pattern="index.rds", full.names = TRUE)
 
 parts <- strsplit(vign_short, split="/")
-pkg_names <-  sapply(parts, "[[", 1)
+pkg_names <-  sapply(parts, "[[", 3)   ### <- web / packages / pkgname / ...
 
 
 rds_data <- lapply(vign_long, readRDS)
@@ -64,6 +64,7 @@ foo <- function(i, rds = rds_data[[i]]){
 
 allVignettes <- lapply(seq_along(rds_data), foo)
 names(allVignettes) <- pkg_names
+
 
 
 # Export individual package files to json ---------------------------------
