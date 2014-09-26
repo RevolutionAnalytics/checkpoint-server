@@ -15,7 +15,7 @@ saveRDS(pkgs, file.path(pkg_output, "packages.rds"))
 rownames(pkgs) <- pkgs[, "Package"]
 
 
-pkgs <- pkgs[1000:1100, ]   ###   <<<<<===== Remove this for production
+# pkgs <- pkgs[1000:1100, ]   ###   <<<<<===== Remove this for production
 
 cl <- makeCluster(numCoresToUse)
 registerDoParallel(cl)
@@ -26,7 +26,7 @@ time <- system.time({
   res <- foreach(p=iter(rownames(pkgs)),
                  .packages = "miniCRAN",
                  .inorder = FALSE) %dopar% {
-                   dp <- makeDepGraph(p, availPkgs = pkgs, suggests=TRUE)
+                   dp <- makeDepGraph(p, availPkgs = pkgs, suggests=TRUE, enhances = TRUE)
                    plotName <- paste0(pkgs[, "Package"][p], ".png")
                    png(file.path(graph_output, plotName), width=800, height=600)
                    plot(dp)
