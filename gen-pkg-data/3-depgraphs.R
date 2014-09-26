@@ -10,38 +10,33 @@ library(miniCRAN)
 
 # Download packages from MRAN snapshot ------------------------------------
 
-# pkgs <- getPackages(repos = snapshot_url)
-pkgs <- getPackagesFromMRAN(cran = cran_uri)
+pkgs <- readRDS(paste0(cran_uri, "web/packages/packages.rds"))
+saveRDS(pkgs, file.path(pkg_output, "packages.rds"))
+rownames(pkgs) <- pkgs[, "Package"]
 
-# pkgs <- pkgs[1:16, ]   ###   <<<<<===== Remove this for production
 
-cl <- makeCluster(4)
+pkgs <- pkgs[1000:1100, ]   ###   <<<<<===== Remove this for production
+
+cl <- makeCluster(numCoresToUse)
 registerDoParallel(cl)
 
-message("Creating dependency graphs")
+message("Creating and plotting dependency graphs")
 
-res <- foreach(p=iter(rownames(pkgs)),
-               .packages = "miniCRAN",
-               .inorder = FALSE) %dopar% {
-  makeDepGraph(p, availPkgs = pkgs)
-}
+time <- system.time({
+  res <- foreach(p=iter(rownames(pkgs)),
+                 .packages = "miniCRAN",
+                 .inorder = FALSE) %dopar% {
+                   dp <- makeDepGraph(p, availPkgs = pkgs, suggests=TRUE)
+                   plotName <- paste0(pkgs[, "Package"][p], ".png")
+                   png(file.path(graph_output, plotName), width=800, height=600)
+                   plot(dp)
+                   dev.off()
 
-saveRDS(res, file=file.path(pkg_output, "allDepGraphs.rds"))
-
-
-message("Plotting dependency graphs")
-
-plotOne <- function(i){
-  plotName <- paste0(pkgs[, "Package"][i], ".png")
-  png(file.path(graph_output, plotName), width=800, height=600)
-  plot(res[[i]])
-  dev.off()
-}
-
-system.time({
-  foreach(i=seq_along(res)) %do% plotOne(i)
+                 }
 })
-
 
 stopCluster(cl)
 
+saveRDS(res, file=file.path(pkg_output, "allDepGraphs.rds"))
+
+message("Time to create dependency graphs: ", time[3])

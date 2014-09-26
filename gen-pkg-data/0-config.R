@@ -21,6 +21,8 @@ allPackagesJson  <- "../packagedata/allpackages.json"
 basePackagesJson <- "../packagedata/basepackages.json"
 allTaskviewJson  <- "../packagedata/alltaskviews.json"
 
+numCoresToUse <- 4
+
 
 
 
