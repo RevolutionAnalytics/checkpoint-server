@@ -19,6 +19,11 @@
 #set your time manually with ntpdate before installing the ntpd service
 ntpdate 0.ubuntu.pool.ntp.org
 
+deluser ubuntu
+
+#Change software sources to desired mirror
+#sed -i 's@http://us.archive.ubuntu.com/ubuntu/@http://ubuntu.osuosl.org/ubuntu@g' /etc/apt/sources.list
+
 #add the required system package repositories
 aptitude update
 aptitude safe-upgrade -y
@@ -26,11 +31,12 @@ aptitude install -y python3-software-properties
 add-apt-repository --yes ppa:nginx/stable
 add-apt-repository --yes ppa:git-core
 add-apt-repository --yes ppa:zfs-native/stable
+add-apt-repository --yes ppa:chris-lea/node.js
 aptitude update
 
 #install the packages we need for this server
 #zfs kernel modules will take a long time to build, be patient
-aptitude install -y ubuntu-zfs nginx-full ntp git at htop screen
+aptitude install -y ubuntu-zfs nodejs nginx-full ntp git at htop screen wget curl libcurl-dev
 
 modprobe zfs
 dmesg | grep ZFS
@@ -40,6 +46,9 @@ ufw enable
 ufw allow 22/tcp
 ufw allow 80/tcp
 ufw allow 873/tcp
+ufw allow 111/tcp
+ufw allow 2049/tcp
+ufw allow 2049/udp
 
 #Note: Please read about ZFS best practices before putting your system into production.
 
@@ -53,7 +62,7 @@ ufw allow 873/tcp
 
 ##################################
 #CHANGE ME TO CORRECT BLOCK DEVICE(S)
-zpool create MRAN /dev/xvdb
+zpool create MRAN /dev/xvdz
 ##################################
 
 zpool set autoexpand=on MRAN
@@ -68,8 +77,8 @@ zfs create MRAN/packages/bin/linux
 zfs create MRAN/www
 zfs create MRAN/staging/src
 zfs create MRAN/staging/bin
-zfs create MRAN/bioc/src
-zfs create MRAN/bioc/bin
+#zfs create MRAN/bioc/src
+#zfs create MRAN/bioc/bin
 
 #create a seperate zpool for storing exports of MRAN file systems
 #zpool create exports /dev/xvdd
@@ -94,12 +103,13 @@ cp rsyncd.conf /etc/rsyncd.conf
 #Nginx stuff
 cp nginx/sites-available/mran.revolutionanalytics.com /etc/nginx/sites-available/
 
-#remove symlink enabling default vhost
-rm etc/nginx/sites-enabled/default
+#remove symlink for unused default vhost
+rm /etc/nginx/sites-enabled/default
 
-#create symlink to our vhost file
+#create symlink to our vhost files
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/mran.revolutionanalytics.com mran.revolutionanalytics.com
+ln -s /etc/nginx/sites-available/projects.revolutionanalytics.com projects.revolutionanalytics.com
 
 #add mran-user account for running MRAN update scripts
 adduser --disabled-password --gecos "" mran-user
@@ -110,26 +120,40 @@ usermod -aG adm mran-user
 #update sudoers file
 echo "%adm ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-aptitude install r-base r-base-dev libcurl4-openssl-dev
+aptitude install -y r-base r-base-dev libcurl4-openssl-dev xvfb xauth xfonts-base libcairo-dev libxmu-dev
 mkdir $HOME/Downloads
 cd $HOME/Downloads
 wget http://cran.revolutionanalytics.com/src/base/R-3/R-3.1.1.tar.gz
 tar xzf R-3.1.1.tar.gz
 cd R-3.1.1
-./configure --with-x=no
+./configure --with-x=yes
 make
 make install
 
 
+####Setting up for standard cran mirror####
 
-#setting up for standard cran mirror
+#this is for cran.revolutionanalytics.com
 zfs create -o mountpoint=/cran MRAN/cran
+
+#this is for cran-snapshots.revolutionanalytics.com
+zfs create -o mountpoint=/cran-www MRAN/cran-www
+
+#set some permissions for the /cran mountpoint
 chown -R mran-user:mran-user /cran
+
 #rsync -rtlzv --delete cran.r-project.org::CRAN /cran/
 cp nginx/sites-available/cran.revolutionanalytics.com /etc/nginx/sites-available/
+cp nginx/sites-available/cran-snapshots.revolutionanalytics.com /etc/nginx/sites-available/
+
+#make symlinks for turning on Nginx configs
 cd /etc/nginx/sites-enabled
 ln -s /etc/nginx/sites-available/cran.revolutionanalytics.com cran.revolutionanalytics.com
+ln -s /etc/nginx/sites-available/cran-snapshots.revolutionanalytics.com cran-snapshots.revolutionanalytics.com
 
+#Make a symlink to serve snapshots at cran-snapshots.revolutionanalytics.com
+cd /cran-www
+sudo ln -s /cran/.zfs/snapshot/ snapshots
 
 
 #configure unattended system upgrades
