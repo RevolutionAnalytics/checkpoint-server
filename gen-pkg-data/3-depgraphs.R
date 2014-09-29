@@ -15,7 +15,7 @@ saveRDS(pkgs, file.path(pkg_output, "packages.rds"))
 rownames(pkgs) <- pkgs[, "Package"]
 
 
-# pkgs <- pkgs[1000:1100, ]   ###   <<<<<===== Remove this for production
+pkgs <- pkgs[1000:1100, ]   ###   <<<<<===== Remove this for production
 
 cl <- makeCluster(numCoresToUse)
 registerDoParallel(cl)
@@ -28,9 +28,10 @@ time <- system.time({
                  .inorder = FALSE) %dopar% {
                    dp <- makeDepGraph(p, availPkgs = pkgs, suggests=TRUE, enhances = TRUE)
                    plotName <- paste0(pkgs[, "Package"][p], ".png")
-                   png(file.path(graph_output, plotName), width=800, height=600)
-                   plot(dp)
+                   png(file.path(graph_output, plotName), width=730, height=560)
+                   plot(dp, vertex.size=15)
                    dev.off()
+                   dp
 
                  }
 })
