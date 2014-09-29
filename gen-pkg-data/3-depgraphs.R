@@ -15,7 +15,7 @@ saveRDS(pkgs, file.path(pkg_output, "packages.rds"))
 rownames(pkgs) <- pkgs[, "Package"]
 
 
-pkgs <- pkgs[1000:1100, ]   ###   <<<<<===== Remove this for production
+# pkgs <- pkgs[1000:1100, ]   ###   <<<<<===== Remove this for production
 
 cl <- makeCluster(numCoresToUse)
 registerDoParallel(cl)
