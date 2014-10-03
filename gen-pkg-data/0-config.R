@@ -5,6 +5,7 @@ suppressPackageStartupMessages({
   library(plyr)
   library(jsonlite)
   library(miniCRAN)
+  library(igraph)
 })
 
 
