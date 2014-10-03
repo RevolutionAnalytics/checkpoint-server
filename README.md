@@ -1,11 +1,13 @@
-MRAN
+checkpoint-server
 ====
 
-Managed R Archive Network
+#### Downstream [CRAN](http://cran.r-project.org/) server with snapshot capabilities
 
-#### Downstream [CRAN](http://cran.r-project.org/) server with snapshot capabilities + advanced metadata from [checkpoint](https://github.com/RevolutionAnalytics.com/checkpoint)
+`checkpoint-server` is the backend for R package [checkpoint](https://github.com/RevolutionAnalytics.com/checkpoint)
 
-* To get started creating a MRAN server, clone this repository to your server
+Part of the [Reproducible R Toolkit](http://projects.revolutionanalytics.com/rrt/) family.
+
+* To get started creating a `checkpoint-server`, clone this repository to your server
 candidate.
 
 * Ubuntu 14.04 is the current reference platform for MRAN, though it should
@@ -28,5 +30,5 @@ from another server or another zpool on an existing system.
 Change the line starting with CHANGE ME to the correct device, then run the
 script to get started building your MRAN server.
 
-* Issues, improvements, ideas? Please use the [MRAN issue tracker](https://github.com/RevolutionAnalytics/MRAN/issues)
-to file any bug reports or leave feedback about MRAN.
+* Issues, improvements, ideas? Please use the [checkpoint-server issue tracker](https://github.com/RevolutionAnalytics/checkpoint-server/issues)
+to file any bug reports or leave feedback about checkpoint-server.
