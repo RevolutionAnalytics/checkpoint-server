@@ -12,10 +12,13 @@ server {
 
         root /cran;
         index index.html index.htm;
-        #autoindex  on;
+        autoindex  on;
 
         # public facing domain name for this vhost
         server_name cran.revolutionanalytics.com;
+
+        access_log /var/log/nginx/cran.revolutionanalytics.com.log;
+        error_log /var/log/nginx/error-cran.revolutionanalytics.com.log;
 
         #enable redirection to package web pages and tasks views
         rewrite ^/package=(.+) /web/packages/$1/index.html redirect;
