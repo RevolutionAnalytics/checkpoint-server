@@ -3,7 +3,7 @@ checkpoint-server
 
 #### Downstream [CRAN](http://cran.r-project.org/) server with snapshot capabilities
 
-`checkpoint-server` is the backend for R package [checkpoint](https://github.com/RevolutionAnalytics.com/checkpoint)
+`checkpoint-server` is the backend for R package [checkpoint](https://github.com/RevolutionAnalytics/checkpoint)
 
 Part of the [Reproducible R Toolkit](http://projects.revolutionanalytics.com/rrt/) family.
 
