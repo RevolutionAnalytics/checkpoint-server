@@ -1,6 +1,6 @@
 #mran.revolutionanalytics.com
 #Chris Mosetick 2014-06-12
-#last update    2014-09-25
+#last update    2014-10-07
 
 server {
         #listen on IPv4 and IPv6 addresses at the same time
@@ -17,8 +17,8 @@ server {
         # public facing domain name for this vhost
         server_name mran.revolutionanalytics.com;
 
-        access_log /var/log/nginx/mran.revolutionanalytics.com.log;
-        error_log /var/log/nginx/error-mran.revolutionanalytics.com.log;
+	access_log /var/log/nginx/mran.revolutionanalytics.com.log;
+	error_log /var/log/nginx/error-mran.revolutionanalytics.com.log;
 
         #define the location of the Nodejs instance running on this system
         #location / {
@@ -27,14 +27,26 @@ server {
         #proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         #}
 
+	#define error page parameters here
+        error_page 404 /404/index.html;
+        #prevent loading error pages directly
+        location  /404/index.html { internal; }
+
 
         location /snapshot {
+		#snapshots is directory containing symlinks to various .zfs/snapshot dirs
                 try_files $uri $uri/ =404;
                 #autoindex is needed since we are not serving up any html or php pages
                 autoindex  on;
-                #snapshots is directory containing symlinks to various .zfs/snapshot dirs
+		autoindex_localtime off;
         }
 
+	location /src/contrib/Archive {
+                try_files $uri $uri/ =404;
+                #autoindex is needed since we are not serving up any html or php pages
+                autoindex  on;
+                autoindex_localtime off;
+        }
 
         location /metadata {
                 try_files $uri $uri/ =404;
@@ -53,17 +65,17 @@ server {
         }
 
         location /history {
-                try_files $uri $uri/ =404;
+		try_files $uri $uri/ =404;
                 autoindex on;
                 #history is symlink pointing to snapshots of the /MRAN/www FS itself
                 #this URL is hidden right now, not on index.html
         }
 
         location /exports {
-                try_files $uri $uri/ =404;
-                autoindex on;
-                #exports is symlink to zpool named exports
-              }
+		try_files $uri $uri/ =404;
+        	autoindex on;
+		#exports is symlink to zpool named exports
+	      }
 
 }
 #this last bracket is needed to close this vhost
