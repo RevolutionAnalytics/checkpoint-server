@@ -1,0 +1,98 @@
+#!/bin/bash
+#update script for binary packages
+#point to local CRAN mirror
+#We use ZFS for snapshots
+
+#user account works with dates and times in UTC via ~/.profile, we set it again here so that is made clear
+export TZ="UTC"
+
+#use ISO standard for date, underscore for date time seperator, no colon for hour minute seperation
+#example: 2014-06-16
+DATE=$(date +"%Y-%m-%d")
+
+#SETUP THE RSYNC
+MRAN_HOME="MRAN/packages/bin"
+WIN_HOME="MRAN/packages/bin/windows"
+MAC_HOME="MRAN/packages/bin/macosx"
+LIN_HOME="MRAN/packages/bin/linux"
+
+#define staging area home
+STAGING_HOME="/MRAN/staging/bin"
+
+#part ONE, get all windows binaries for R 3.1
+# bin/windows/contrib/checkSummaryWin.html
+rsync -rtzv --delete --exclude=stats /cran/bin/windows/contrib/3.1/ /$WIN_HOME > /tmp/MRAN-windows-bin3.1-rsync-download.log
+#part TWO, get all Mac OS X binaries for R 3.1, Mavericks 10.9+ build
+rsync -rtzv --delete /cran/bin/macosx/mavericks/contrib/3.1/ /$MAC_HOME > /tmp/MRAN-macosx-bin3.1-rsync-download.log
+#part THREE, get all Linux binaries for current date
+rsync -rtzv --delete /cran/bin/linux/ /$LIN_HOME > /tmp/MRAN-linux-bin-rsync-download.log
+
+#part THREE, create a directory for all current packages that do not already have a dir in checkpoint-server
+#cd $STAGING_HOME
+#You will get warnings about dirs that already exist
+#for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); mkdir $MRAN_HOME/$dirname; done
+
+#part FOUR, copy the files with rsync from local staging area to respective dirs in MRAN_HOME, preserving the original timestamps
+#for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); rsync -rt --ignore-existing $file $MRAN_HOME/$dirname/; done
+
+#take a new snapshot after the rsync process is finished
+#use date format for snapshot name
+sudo zfs snapshot -r $MRAN_HOME@$DATE
+
+#SETUP THE DIFFS
+#ignore warning about this directory already existing
+mkdir /tmp/mran_bin
+DIFF_TMP_HOME="/tmp/mran_bin"
+#define www home
+WWW_HOME="/MRAN/www"
+#define year for diff directories
+YEAR=$(date +"%Y")
+
+#Windows - get the name of the last two windows snapshots in zfs and send to a temporary file
+sudo zfs list -r $WIN_HOME -t snapshot | tail -n 2 | cut -d " " -f -1 > $DIFF_TMP_HOME/bin-win-tempdiffs.txt
+#head the first line of the temp file to get the name of the second to last snapshot, send to new temp file
+LASTWIN=$(head -n 1 $DIFF_TMP_HOME/bin-win-tempdiffs.txt)
+#tail the last line of the temp file to get the name of the most recent snapshot, send to new temp file
+CURRENTWIN=$(tail -n 1 $DIFF_TMP_HOME/bin-win-tempdiffs.txt)
+
+#Macintosh - get the name of the last two macintosh snapshots in zfs and send to a temporary file
+sudo zfs list -r $MAC_HOME -t snapshot | tail -n 2 | cut -d " " -f -1 > $DIFF_TMP_HOME/bin-mac-tempdiffs.txt
+#head the first line of the temp file to get the name of the second to last snapshot, send to new temp file
+LASTMAC=$(head -n 1 $DIFF_TMP_HOME/bin-mac-tempdiffs.txt)
+#tail the last line of the temp file to get the name of the most recent snapshot, send to new temp file
+CURRENTMAC=$(tail -n 1 $DIFF_TMP_HOME/bin-mac-tempdiffs.txt)
+
+#Linux - get the name of the last two windows snapshots in zfs and send to a temporary file
+sudo zfs list -r $LIN_HOME -t snapshot | tail -n 2 | cut -d " " -f -1 > $DIFF_TMP_HOME/bin-lin-tempdiffs.txt
+#head the first line of the temp file to get the name of the second to last snapshot, send to new temp file
+LASTLIN=$(head -n 1 $DIFF_TMP_HOME/bin-lin-tempdiffs.txt)
+#tail the last line of the temp file to get the name of the most recent snapshot, send to new temp file
+CURRENTLIN=$(tail -n 1 $DIFF_TMP_HOME/bin-lin-tempdiffs.txt)
+
+
+#RUN THE DIFFS
+#use the variables created above to compare the last two snapshots, send to the public facing diffs directory for each binary platform
+
+#Windows
+echo "Diffed Snapshots:" > $WWW_HOME/diffs/bin/windows/$YEAR/$DATE.txt
+echo $LASTWIN >> $WWW_HOME/diffs/bin/windows/$YEAR/$DATE.txt
+echo $CURRENTWIN >> $WWW_HOME/diffs/bin/windows/$YEAR/$DATE.txt
+echo "Diff Contents:" >> $WWW_HOME/diffs/bin/windows/$YEAR/$DATE.txt
+sudo zfs diff $LASTWIN $CURRENTWIN >> $WWW_HOME/diffs/bin/windows/$YEAR/$DATE.txt
+
+#Macintosh
+echo "Diffed Snapshots:" > $WWW_HOME/diffs/bin/macosx/$YEAR/$DATE.txt
+echo $LASTMAC >> $WWW_HOME/diffs/bin/macosx/$YEAR/$DATE.txt
+echo $CURRENTMAC >> $WWW_HOME/diffs/bin/macosx/$YEAR/$DATE.txt
+echo "Diff Contents:" >> $WWW_HOME/diffs/bin/macosx/$YEAR/$DATE.txt
+sudo zfs diff $LASTMAC $CURRENTMAC >> $WWW_HOME/diffs/bin/macosx/$YEAR/$DATE.txt
+
+#Linux
+echo "Diffed Snapshots:" > $WWW_HOME/diffs/bin/linux/$YEAR/$DATE.txt
+echo $LASTLIN >> $WWW_HOME/diffs/bin/linux/$YEAR/$DATE.txt
+echo $CURRENTLIN >> $WWW_HOME/diffs/bin/linux/$YEAR/$DATE.txt
+echo "Diff Contents:" >> $WWW_HOME/diffs/bin/linux/$YEAR/$DATE.txt
+sudo zfs diff $LASTLIN $CURRENTLIN >> $WWW_HOME/diffs/bin/linux/$YEAR/$DATE.txt
+
+#run the binary space accounting script
+$HOME/src/checkpoint-server/accounting-bin.bsh

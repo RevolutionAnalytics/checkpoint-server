@@ -1,0 +1,73 @@
+#!/bin/bash
+#This is for src
+#point to local CRAN mirror
+#We use ZFS for snapshots
+
+#rrt-user account works with dates and times in UTC via ~/.profile, we set it again here so that is made clear
+export TZ="UTC"
+
+#use ISO standard for date, underscore for date time seperator, no colon for hour minute seperation
+#example: 2014-06-16
+DATE=$(date +"%Y-%m-%d")
+
+#SETUP THE RSYNC
+#define MRAN home, no root slash
+MRAN_HOME="MRAN/packages/src"
+
+#define staging area home, no root slash
+STAGING_HOME="MRAN/staging/src"
+
+#part ONE, create MRAN by getting all archived versions of all packages first. These are sorted into dirs by CRAN
+rsync -rtzv --exclude=README /cran/src/contrib/Archive/ /$MRAN_HOME/ > /tmp/MRAN-archive-rsync-download.log
+
+#part TWO, current package versions, stage into temporary holding dir
+rsync -rtzv --delete-before /cran/contrib/main/*.tar.gz /$STAGING_HOME/ > /tmp/MRAN-current-rsync-download.log
+
+#part THREE, create a directory for all current packages that do not already have a dir in MRAN.
+cd /$STAGING_HOME
+#You will get warnings about dirs that already exist
+for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); mkdir /$MRAN_HOME/$dirname; done
+
+#part FOUR, copy the files with rsync from local staging area to respective dirs in MRAN_HOME, preserving the original timestamps
+for file in *.tar.gz; do dirname=$(echo $file | sed 's/_.*//'); rsync -rt --ignore-existing $file /$MRAN_HOME/$dirname/; done
+
+
+#take a new snapshot after the rsync process is finished
+#use date format for snapshot name
+sudo zfs snapshot $MRAN_HOME@$DATE
+
+
+#SETUP THE DIFFS
+mkdir /tmp/mran_src
+DIFF_TMP_HOME="/tmp/mran_src"
+
+#get the name of the last two snapshots in zfs and send to a temporary file
+sudo zfs list -r $MRAN_HOME -t snapshot | tail -n 2 | cut -d " " -f -1 > /tmp/src-tempdiffs.txt
+
+#head the first line of the temp file to get the name of the second to last snapshot, send to new temp file
+LAST=$(head -n 1 /tmp/src-tempdiffs.txt)
+
+#tail the last line of the temp file to get the name of the most recent snapshot, send to new temp file
+CURRENT=$(tail -n 1 /tmp/src-tempdiffs.txt)
+
+#define www home, no root slash
+WWW_HOME="MRAN/www"
+
+#define year for diff files
+YEAR=$(date +"%Y")
+
+#RUN THE DIFF
+#use the variables created above to compare the last two snapshots, send to the public facing diffs directory
+
+echo "Diffed Snapshots:" > /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
+
+echo $LAST >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
+
+echo $CURRENT >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
+
+echo "Diff Contents:" >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
+
+sudo zfs diff $LAST $CURRENT >> /$WWW_HOME/diffs/src/$YEAR/$DATE.txt
+
+#run the source package space accounting script
+$HOME/src/checkpoint-server/accounting-src.bsh

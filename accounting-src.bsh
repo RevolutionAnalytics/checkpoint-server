@@ -1,0 +1,31 @@
+#!/bin/bash
+#source package space accounting output
+
+#rrt-user account works with dates and times in GMT via ~/.profile, we set it again here so that is made clear
+export TZ="UTC"
+
+#use ISO standard for date, underscore for date time seperator, no colon for hour minute seperation
+#example: 2014-06-16
+DATE=$(date +"%Y-%m-%d")
+
+#define www home for accounting
+WWW_HOME="/MRAN/www/accounting"
+
+#define target file name
+TARGET="source.txt"
+
+echo "source packages accounting information for date: $DATE UTC" > $WWW_HOME/$TARGET
+
+echo "raw ZFS file system usage" >> $WWW_HOME/$TARGET
+sudo zfs list MRAN/packages/src  >> $WWW_HOME/$TARGET
+
+
+echo "####-----------------------------------------------------####" >> $WWW_HOME/$TARGET
+
+echo "number of source packages in MRAN (does not include all versions of packages)" >> $WWW_HOME/$TARGET
+ls -l /MRAN/packages/src | wc -l >> $WWW_HOME/$TARGET
+
+echo "####-----------------------------------------------------####" >> $WWW_HOME/$TARGET
+
+echo "source package snapshot accounting info for $DATE UTC" >> $WWW_HOME/$TARGET
+sudo zfs list -r -t snapshot /MRAN/packages/src >> $WWW_HOME/$TARGET
