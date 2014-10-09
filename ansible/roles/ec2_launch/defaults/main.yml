@@ -1,0 +1,24 @@
+# roles/ec2_launch/defaults/main.yml
+
+# default values for EC2 launch role variables
+---
+ncount: 1
+instance_type: r3.large
+instance_tags: 
+  id: "{{ id }}"
+
+image: ami-076e6542 #Official Ubuntu 14.04 LTS AMI
+region: us-west-1
+security_group: "default"
+type: "default"
+
+ec2_ebs_volumes:
+- device_name: /dev/sda1
+  volume_size: 30
+  delete_on_termination: True
+
+- device_name: /dev/sdb
+  volume_size: 1000
+  delete_on_termination: True
+  
+

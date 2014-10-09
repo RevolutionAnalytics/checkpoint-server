@@ -1,0 +1,51 @@
+###########################################################################################
+# Once you set your options, run:                                                         #
+#   ansible-playbook mran_server.yml --private-key=/key/path.pem --extra-vars "@vars.yml" #
+#                                                                                         #
+# You need to set up a private key before hand and provide its name below.                #
+# You need to provide a set up and provide a security group name below.                   #
+# You must set up your amazon keys up as environment variables before running this.       #
+#                                                                                         #
+###########################################################################################
+
+
+##################################################################
+# The id is a unique tag that is required when making api calls. #
+# Try to make the id reflect what your server is doing.          # 
+# For example: mran_server                                       #
+##################################################################
+
+id: #set_me
+
+#################################################################
+# You need to create a keypair (or use an existing one) in ec2  #
+# and provide its name here. In addition, you need to pass the  #
+# path to the .pem file into the command line as shown above    #
+#################################################################
+
+keypair: #set_me (should not include .pem extension)
+
+###########################################################
+# Create a security group allowing traffic to 80 and 443. #
+# Provide the name of the security group below            #
+###########################################################
+
+security_group: #set_me
+
+#########################################################
+# The instance type can be set to any value found here: #
+#   http://aws.amazon.com/ec2/instance-types/           #
+#########################################################
+
+instance_type: m3.xlarge
+
+##############################################
+#  Set the below flags to True/False to turn #
+#  regions on/off.                           #
+##############################################
+
+california: True
+virginia: True
+ireland: True
+australia: True
+san_paulo: True

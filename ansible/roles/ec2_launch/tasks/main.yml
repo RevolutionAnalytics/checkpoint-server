@@ -1,0 +1,43 @@
+# roles/ec2_launch/tasks/main.yml
+# Justin Martenstein/Nathan Sosnovske, August 2014
+
+# role to launch an EC2 instance; should be added to any playbook
+# where a cluster is initialized on EC2
+
+---
+- name: Launch instance
+  local_action:
+    module: ec2
+    count: "{{ ncount }}" 
+    id: "{{ id }}"
+    group: "{{ security_group }}"
+    instance_type: "{{ instance_type }}"
+    instance_tags: '{ "id": "{{ id }}" }'
+    image: "{{ image }}"
+    keypair: "{{ keypair }}"
+    region: "{{ region }}"
+    volumes: "{{ ec2_ebs_volumes }}"
+    wait: true
+  register: ec2
+  tags: launch
+
+- name: Add new instance to host group
+  local_action:
+    module: add_host
+    hostname: "{{ item.public_ip }}"
+    private_ip: "{{ item.private_ip }}"
+    public_dns_name: "{{ item.public_dns_name }}"
+    groupname: "launched"
+  with_items: ec2.instances
+  tags: launch
+
+- name: Wait for SSH to come up
+  local_action:
+    module: wait_for
+    host: "{{ item.public_dns_name }}"
+    port: 22
+    delay: 30
+    state: started
+  with_items: ec2.instances
+  tags: [ ssh, launch ]
+
