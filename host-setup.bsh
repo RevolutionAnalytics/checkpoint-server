@@ -119,7 +119,7 @@ usermod -aG adm mran-user
 #update sudoers file
 echo "%adm ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-aptitude install -y r-base r-base-dev libcurl4-openssl-dev xvfb xauth xfonts-base libcairo-dev libxmu-dev
+aptitude install -y r-base r-base-dev libcurl4-openssl-dev xvfb xauth xfonts-base libcairo-dev libxmu-dev libxml2-dev
 mkdir $HOME/Downloads
 cd $HOME/Downloads
 wget http://cran.revolutionanalytics.com/src/base/R-3/R-3.1.1.tar.gz
@@ -128,6 +128,13 @@ cd R-3.1.1
 ./configure --with-x=yes
 make
 make install
+
+#create .Rprofile to set repo for Rscript
+echo "options(repos=structure(c(CRAN="http://cran.revolutionanalytics.com/")))" > $HOME/.Rprofile
+
+#install the R packages needed for package data generation
+#note that miniCRAN needs system package libxml2-dev which is already installed
+/usr/bin/Rscript -e 'install.packages(c("jsonlite","ctv","plyr","XML","miniCRAN","foreach"))'
 
 
 ####Setting up for standard cran mirror####
