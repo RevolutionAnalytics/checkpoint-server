@@ -37,7 +37,7 @@
     hostname: "{{ item.public_ip }}"
     private_ip: "{{ item.private_ip }}"
     public_dns_name: "{{ item.public_dns_name }}"
-    groupname: "{{ host_group }}
+    groupname: "{{ host_group }}"
   with_items: ec2.instances
   when: host_group is defined
 
