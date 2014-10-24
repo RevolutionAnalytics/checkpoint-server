@@ -1,0 +1,28 @@
+---
+name: Add repos for prereq packages
+apt_repository: repo={{ item }}
+with_items:
+  - "ppa:nginx/stable"
+  - "ppa:git-core
+  - "ppa:zfs-native/stable"
+  - "ppa:chris-lea/node.js"  
+
+name: Install prereq packages
+apt: name={{ item }} state=present update_cache=yes
+with_items:
+  - ubuntu-zfs
+  - nodejs
+  - nginx-full
+  - ntp
+  - git
+  - at
+  - htop
+  - screen
+  - wget
+  - curl
+  - libcurl-dev
+
+
+
+
+

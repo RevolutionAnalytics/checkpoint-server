@@ -6,31 +6,48 @@
        when: id is not defined
   roles:
     - role: ec2_launch
+      region: us-west-1
+      image: ami-076e6542
+      ncount: 1
+      host_group: master
+      when: master
+
+    - role: ec2_launch
       region: us-west-1 #Northern California
       image: ami-076e6542
       ncount: 1
+      host_group: slave
       when: california
 
     - role: ec2_launch
       region: us-east-1 #Virginia
       image: ami-9eaa1cf6
       ncount: 1
+      host_group: slave
       when: virginia
 
     - role: ec2_launch
       region: eu-west-1 #EU (Ireland)
       image: ami-f0b11187
       ncount: 1
+      host_group: slave
       when: ireland
 
     - role: ec2_launch
       region: ap-southeast-2 #Asia Pacific (Sydney)
       image: ami-1711732d
       ncount: 1
+      host_group: slave
       when: australia
 
     - role: ec2_launch
       region: sa-east-1 #South America (San Paulo)
       image: ami-69d26774
       ncount: 1
+      host_group: slave
       when: san_paulo
+
+- hosts: launched
+  user: ubuntu
+  roles:
+    role: checkpoint_server_prereqs
