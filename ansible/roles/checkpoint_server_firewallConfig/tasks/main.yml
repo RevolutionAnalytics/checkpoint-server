@@ -1,0 +1,17 @@
+---
+- name: Open TCP ports needed for ssh, http, rsync
+  ufw: rule=allow port={{ item }} proto=tcp
+  with_items:
+    - 22
+    - 80
+    - 111
+    - 873
+    - 2049
+
+- name: Open UDP ports eeded
+  ufw: rule=allow port={{ item }} proto=udp
+  with_items:
+    - 2049
+
+- name: Turn on UFW
+  ufw: state=enabled policy=deny
