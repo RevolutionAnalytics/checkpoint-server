@@ -49,5 +49,7 @@
 
 - hosts: launched
   user: ubuntu
+  sudo: yes
   roles:
-    role: checkpoint_server_prereqs
+    - role: checkpoint_server_prereqs
+    - role: checkpoint_server_firewallConfig
