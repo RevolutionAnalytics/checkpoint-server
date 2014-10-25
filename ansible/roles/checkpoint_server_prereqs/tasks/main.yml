@@ -1,6 +1,6 @@
 ---
 - name: Add repos for prereq packages
-  apt_repository: repo={{ item }}
+  apt_repository: repo={{ item }} validate_certs=no
   with_items:
     - "ppa:nginx/stable"
     - "ppa:git-core"
@@ -20,7 +20,7 @@
     - screen
     - wget
     - curl
-    - libcurl-dev
+    - libcurl4-openssl-dev
 
 - name: Build and apply zfs module
   modprobe: name=zfs state=present
