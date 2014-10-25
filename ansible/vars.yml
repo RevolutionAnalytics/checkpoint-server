@@ -1,12 +1,12 @@
-###########################################################################################
-# Once you set your options, run:                                                         #
-#   ansible-playbook mran_server.yml --private-key=/key/path.pem --extra-vars "@vars.yml" #
-#                                                                                         #
-# You need to set up a private key before hand and provide its name below.                #
-# You need to provide a set up and provide a security group name below.                   #
-# You must set up your amazon keys up as environment variables before running this.       #
-#                                                                                         #
-###########################################################################################
+##################################################################################################
+# Once you set your options, run:                                                                #
+#   ansible-playbook create_mran_server.yml --private-key=/key/path.pem --extra-vars "@vars.yml" #
+#                                                                                                #
+# You need to set up a private key before hand and provide its name below.                       #
+# You need to provide a set up and provide a security group name below.                          #
+# You must set up your amazon keys up as environment variables before running this.              #
+#                                                                                                #
+##################################################################################################
 
 
 ##################################################################
@@ -23,7 +23,7 @@ id: #set_me
 # path to the .pem file into the command line as shown above    #
 #################################################################
 
-keypair: #set_me (should not include .pem extension)
+keypair: #set_me
 
 ###########################################################
 # Create a security group allowing traffic to 80 and 443. #
@@ -37,15 +37,16 @@ security_group: #set_me
 #   http://aws.amazon.com/ec2/instance-types/           #
 #########################################################
 
-instance_type: m3.xlarge
+instance_type: m3.large
 
 ##############################################
 #  Set the below flags to True/False to turn #
 #  regions on/off.                           #
 ##############################################
 
-california: True
-virginia: True
-ireland: True
-australia: True
-san_paulo: True
+master: True
+california: False
+virginia: False
+ireland: False
+australia: False
+san_paulo: False
