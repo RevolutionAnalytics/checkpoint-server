@@ -141,7 +141,7 @@ echo "options(repos=structure(c(CRAN="http://cran.revolutionanalytics.com/")))" 
 
 #install the R packages needed for package data generation
 #note that miniCRAN needs system package libxml2-dev which is already installed
-/usr/bin/Rscript -e 'install.packages(c("jsonlite","ctv","plyr","XML","miniCRAN","foreach"))'
+/usr/local/bin/Rscript -e 'install.packages(c("jsonlite","ctv","plyr","XML","miniCRAN","foreach"))'
 
 #NFS mount for MRAN home, avoid duplicating data, point to the same CRAN data as master server
 #point to local data center LAN IPv4 address of mran.revolutionanalytics.com
