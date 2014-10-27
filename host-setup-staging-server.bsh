@@ -1,0 +1,188 @@
+#!/bin/bash
+
+#DO NOT CHECK IN THIS COPY OF HOST-SETUP.BSH UNTIL FURTHER REVIEW
+
+# __        ___  __        __   __         ___     __   ___  __        ___  __
+#/  ` |__| |__  /  ` |__/ |__) /  \ | |\ |  |  __ /__` |__  |__) \  / |__  |__)
+#\__, |  | |___ \__, |  \ |    \__/ | | \|  |     .__/ |___ |  \  \/  |___ |  \
+#
+
+#checkpoint-server configuration and setup for Ubuntu 14.04
+#these commands are run as root user
+
+#MRAN operates on UTC time zone (which is very similar to GMT.)
+#This is important for scientific reproducibility aspects of statistical analyses.
+#Type `date` into a shell prompt on your server to see the current time zone.
+
+#If your server is not already on UTC, run the command below as user root
+  # `dpkg-reconfigure tzdata`
+#select "none of the above", then choose UTC.
+
+#set your time manually with ntpdate before installing the ntpd service
+ntpdate 0.ubuntu.pool.ntp.org
+
+deluser ubuntu
+
+#Change software sources to desired mirror
+#sed -i 's@http://us.archive.ubuntu.com/ubuntu/@http://ubuntu.osuosl.org/ubuntu@g' /etc/apt/sources.list
+
+#add the required system package repositories
+aptitude update
+aptitude safe-upgrade -y
+aptitude install -y python3-software-properties
+add-apt-repository --yes ppa:nginx/stable
+add-apt-repository --yes ppa:git-core
+add-apt-repository --yes ppa:zfs-native/stable
+add-apt-repository --yes ppa:chris-lea/node.js
+aptitude update
+
+#install the packages we need for this server
+aptitude install -y nfs-common nodejs nginx-full ntp git at htop screen wget curl libcurl-dev
+
+#modprobe zfs
+#dmesg | grep ZFS
+
+#configure the firewall for ssh, http, rsync access
+ufw enable
+ufw allow 22/tcp
+ufw allow 80/tcp
+ufw allow 873/tcp
+ufw allow 111/tcp
+ufw allow 2049/tcp
+ufw allow 2049/udp
+
+#Note: Please read about ZFS best practices before putting your system into production.
+
+#create a zpool on a block device
+#you will need to determine the correct block device identifier.
+#for better reliability on physical Linux systems /dev/disk/by-id/<disk-name>
+#is the best disk id method to use.
+#using whole disk mirrors or raidz2 on physical systems is highly reccommended.
+#on many cloud servers, /dev/disk/by-id does not exist, therefore attach a block
+#device to the system and use old /dev identifiers for creating your zpool.
+
+##################################
+#CHANGE ME TO CORRECT BLOCK DEVICE(S)
+#zpool create MRAN /dev/xvdz
+##################################
+
+#zpool set autoexpand=on MRAN
+#zfs set atime=off MRAN
+#zfs set compression=lzjb MRAN
+#zfs create MRAN/packages
+#zfs create MRAN/packages/src
+#zfs create MRAN/packages/bin
+#zfs create MRAN/packages/bin/windows
+#zfs create MRAN/packages/bin/macosx
+#zfs create MRAN/packages/bin/linux
+#zfs create MRAN/www
+#zfs create MRAN/staging/src
+#zfs create MRAN/staging/bin
+#zfs create MRAN/bioc/src
+#zfs create MRAN/bioc/bin
+
+#create a seperate zpool for storing exports of MRAN file systems
+#zpool create exports /dev/xvdd
+
+#create symbolic links to packages file systems snapshot directory
+#cd /MRAN/www
+#mkdir snapshots
+#cd snapshots
+#ln -s /MRAN/packages/src/.zfs/snapshot/ src
+#mkdir bin
+#ln -s /MRAN/packages/win/.zfs/snapshot/ win
+#ln -s /MRAN/packages/macosx/.zfs/snapshot/ macosx
+#ln -s /MRAN/packages/linux/.zfs/snapshot/ linux
+
+#turn on rsync deamon and set some options
+#sed -i 's;RSYNC_ENABLE=false;RSYNC_ENABLE=true;' /etc/default/rsync
+#sed -i 's;# RSYNC_CONFIG_FILE=;RSYNC_CONFIG_FILE=/etc/rsyncd.conf;' /etc/default/rsync
+
+#copy our config file to /etc
+#cp rsyncd.conf /etc/rsyncd.conf
+
+#Nginx stuff for stanging server
+cp nginx/sites-available/devstaging.mran.io /etc/nginx/sites-available/
+cp nginx/sites-available/masterstaging.mran.io /etc/nginx/sites-available/
+
+#remove symlink for unused default vhost
+rm /etc/nginx/sites-enabled/default
+
+#create symlink to our vhost files
+cd /etc/nginx/sites-enabled
+ln -s /etc/nginx/sites-available/devstaging.mran.io /etc/nginx/sites-enabled/devstaging.mran.io
+ln -s /etc/nginx/sites-available/masterstaging.mran.io /etc/nginx/sites-enabled/masterstaging.mran.io
+
+#add mran-user account for running MRAN update scripts
+adduser --disabled-password --gecos "" mran-user
+
+#add staging user accounts for each branch of the project, dev and master
+adduser --disabled-password --gecos "" devstaging-user
+adduser --disabled-password --gecos "" masterstaging-user
+
+#add mran-user to adm group
+usermod -aG adm mran-user
+
+#update sudoers file
+echo "%adm ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+aptitude install -y r-base r-base-dev libcurl4-openssl-dev xvfb xauth xfonts-base libcairo-dev libxmu-dev libxml2-dev
+mkdir $HOME/Downloads
+cd $HOME/Downloads
+wget http://cran.revolutionanalytics.com/src/base/R-3/R-3.1.1.tar.gz
+tar xzf R-3.1.1.tar.gz
+cd R-3.1.1
+./configure --with-x=yes
+make
+make install
+
+#create .Rprofile to set repo for Rscript
+echo "options(repos=structure(c(CRAN="http://cran.revolutionanalytics.com/")))" > $HOME/.Rprofile
+
+#install the R packages needed for package data generation
+#note that miniCRAN needs system package libxml2-dev which is already installed
+/usr/bin/Rscript -e 'install.packages(c("jsonlite","ctv","plyr","XML","miniCRAN","foreach"))'
+
+#NFS mount for MRAN home, avoid duplicating data, point to the same CRAN data as master server
+#point to local data center LAN IPv4 address of mran.revolutionanalytics.com
+cat fstab.staging >> /etc/fstab
+
+#CREATE DEV STAGING USER ACCOUNT
+su - devstaging-user
+ssh-keygen -f $HOME/.ssh/id_ecdsa -t ecdsa -b 521 -N ''  #need to figure aut how to get the pub half of this key into Github via API
+echo "StrictHostKeyChecking no" > $HOME/.ssh/config
+mkdir bin
+mkdir src
+mkdir packagedata
+mkdir packagedata/json
+mkdir packagedata/graphs
+cd src
+git clone git@github.com:RA-Internal/MRAN-site.git
+cd $HOME/src/MRAN-site
+git checkout dev
+git pull
+cd $HOME/src/checkpoint-server
+cp MRAN-site-build.bsh $HOME/bin/
+$HOME/bin/MRAN-site-build.bsh
+
+#CREATE MASTER STAGING USER ACCOUNT
+su - masterstaging-user
+ssh-keygen -f $HOME/.ssh/id_ecdsa -t ecdsa -b 521 -N ''  #need to figure aut how to get the pub half of this key into Github via API
+echo "StrictHostKeyChecking no" > $HOME/.ssh/config
+mkdir bin
+mkdir src
+mkdir packagedata
+mkdir packagedata/json
+mkdir packagedata/graphs
+cd src
+git clone git@github.com:RA-Internal/MRAN-site.git
+cd $HOME/src/MRAN-site
+git checkout master
+git pull
+cd $HOME/src/checkpoint-server
+cp MRAN-site-build.bsh $HOME/bin/
+$HOME/bin/MRAN-site-build.bsh
+
+#configure unattended system upgrades
+#set to 'yes' or 'on'
+#dpkg-reconfigure unattended-upgrades

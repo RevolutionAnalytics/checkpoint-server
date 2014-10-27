@@ -1,0 +1,3 @@
+#NFS mount for MRAN home, avoid duplicating data, point to the same CRAN data as master server
+#point to local data center LAN IPv4 address of mran.revolutionanalytics.com
+10.183.4.56:/cran       /cran   nfs  ro,noatime         0 0
