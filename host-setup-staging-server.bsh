@@ -22,6 +22,7 @@
 ntpdate 0.ubuntu.pool.ntp.org
 
 deluser ubuntu
+rm -rf /home/ubuntu
 
 #Change software sources to desired mirror
 #sed -i 's@http://us.archive.ubuntu.com/ubuntu/@http://ubuntu.osuosl.org/ubuntu@g' /etc/apt/sources.list
