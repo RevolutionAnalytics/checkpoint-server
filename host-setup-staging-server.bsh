@@ -184,6 +184,8 @@ cd $HOME/src/checkpoint-server
 cp MRAN-site-build.bsh $HOME/bin/
 $HOME/bin/MRAN-site-build.bsh
 
+service nginx restart
+
 #configure unattended system upgrades
 #set to 'yes' or 'on'
 #dpkg-reconfigure unattended-upgrades
