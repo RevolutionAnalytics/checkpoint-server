@@ -1,0 +1,27 @@
+---
+- name: Create zpool
+  command: zpool create MRAN /dev/xvdf
+  ignore_errors: true
+
+- name: Set zpool autoexpand property
+  command: zpool set autoexpand=on MRAN
+  ignore_errors: true
+
+- name: Ensure MRAN present
+  zfs: name=MRAN state=present atime=on compression=lzjb
+
+- name: Create MRAN directories
+  zfs: name=MRAN/{{ item }} state=present
+  with_items:
+  - packages
+  - packages/src
+  - packages/bin
+  - packages/bin/windows
+  - packages/bin/macosx
+  - packages/bin/linux
+  - www
+  - staging
+  - staging/src
+  - staging/bin
+
+

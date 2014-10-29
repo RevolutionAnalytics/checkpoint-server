@@ -4,6 +4,13 @@
   pre_tasks:
      - fail: msg="Please specify a unique id variable in the vars.yml file or on the commandline."
        when: id is not defined
+  vars:
+    ec2_ebs_devices:
+    - /dev/xvdf
+    ec2_ebs_volumes:
+    - device_name: "{{ ec2_ebs_devices[0] }}"
+      volume_size: 100
+      delete_on_termination: yes
   roles:
     - role: ec2_launch
       region: us-west-1
@@ -53,3 +60,4 @@
   roles:
     - role: checkpoint_server_prereqs
     - role: checkpoint_server_firewallConfig
+    - role: checkpoint_server_zfsConfig
