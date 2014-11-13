@@ -30,6 +30,11 @@ server {
 		allow all;
 	}
 
+  location /install {
+          alias /home/devstaging-user/install;
+          allow all;
+  }
+
         location /snapshot {
 		#snapshots is directory containing symlinks to various .zfs/snapshot dirs
                 try_files $uri $uri/ =404;
