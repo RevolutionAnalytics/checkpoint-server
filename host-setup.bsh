@@ -35,7 +35,7 @@ aptitude update
 
 #install the packages we need for this server
 #zfs kernel modules will take a long time to build, be patient
-aptitude install -y ubuntu-zfs nodejs nginx-full ntp git at htop screen wget curl libcurl-dev
+aptitude install -y ubuntu-zfs nodejs nginx-full ntp git at htop screen wget curl libcurl-dev openjdk-7-jre
 
 modprobe zfs
 dmesg | grep ZFS
