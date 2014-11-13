@@ -1,6 +1,6 @@
 #mran.revolutionanalytics.com
 #Chris Mosetick 2014-06-12
-#last update    2014-10-07
+#last update    2014-11-12
 
 server {
         #listen on IPv4 and IPv6 addresses at the same time
@@ -8,10 +8,7 @@ server {
         listen [::]:80;
 
         #directory in the file system to serve web pages and packages from
-        #this is a detachable block disk formatted with ZFS that can be easily moved to another server
-        #www dir is for landing page stuff
-        #root /MRAN/www;
-        root /home/mran-user/src/MRAN-site/dist;
+        root /home/mran-user/jenkins/workspace/production-MRAN-build/dist;
         index index.html index.htm;
 
         # public facing domain name for this vhost
@@ -20,18 +17,18 @@ server {
 	access_log /var/log/nginx/mran.revolutionanalytics.com.log;
 	error_log /var/log/nginx/error-mran.revolutionanalytics.com.log;
 
-        #define the location of the Nodejs instance running on this system
-        #location / {
-        #proxy_pass http://localhost:7300/;
-        #proxy_set_header Host $host;
-        #proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        #}
-
 	#define error page parameters here
         error_page 404 /404/index.html;
         #prevent loading error pages directly
         location  /404/index.html { internal; }
 
+      #send blogs that link to old location to current location
+      rewrite ^/documents/rro/open$ http://mran.revolutionanalytics.com/open permanent;
+
+      location /packagedata {
+              alias /home/mran-user/jenkins/workspace/production-gen-pkg-data/packagedata;
+              allow all;
+      }
 
         location /snapshot {
 		#snapshots is directory containing symlinks to various .zfs/snapshot dirs
