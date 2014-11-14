@@ -23,7 +23,7 @@ server {
         location  /404/index.html { internal; }
 
       #send blogs that link to old location to current location
-      rewrite ^/documents/rro/open$ http://mran.revolutionanalytics.com/open permanent;
+      rewrite ^/documents/rro/open^$ http://mran.revolutionanalytics.com/open permanent;
 
       location /packagedata {
               alias /home/mran-user/jenkins/workspace/production-gen-pkg-data/packagedata;
