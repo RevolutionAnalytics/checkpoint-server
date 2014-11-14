@@ -1,6 +1,6 @@
 #mran.revolutionanalytics.com
 #Chris Mosetick 2014-06-12
-#last update    2014-11-12
+#last update    2014-11-13
 
 server {
         #listen on IPv4 and IPv6 addresses at the same time
@@ -27,6 +27,11 @@ server {
 
       location /packagedata {
               alias /home/mran-user/jenkins/workspace/production-gen-pkg-data/packagedata;
+              allow all;
+      }
+
+      location /install {
+              alias /home/mran-user/install;
               allow all;
       }
 
