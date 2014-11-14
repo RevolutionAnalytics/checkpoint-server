@@ -13,5 +13,7 @@ rsync -rtlzv --delete cran.r-project.org::CRAN /cran/
 #take a snapshot after the rsync completes
 sudo zfs snapshot MRAN/cran@$DATE
 
+
+# --json and png generation happens in seperate Jenkins job now--
 #build the json files and png files needed for the MRAN-site to function
-xvfb-run -a /usr/local/bin/Rscript /home/mran-user/gen-pkg-data/doit.R > /tmp/doit.R.out
+#xvfb-run -a /usr/local/bin/Rscript /home/mran-user/gen-pkg-data/doit.R > /tmp/doit.R.out
