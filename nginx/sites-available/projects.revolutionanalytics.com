@@ -1,6 +1,6 @@
 #projects.revolutionanalytics.com
 #Chris Mosetick
-#last update    2014-10-07
+#last update: 2014-11-18
 
 server {
         #listen on IPv4 and IPv6 addresses at the same time
@@ -8,7 +8,7 @@ server {
         listen [::]:80;
 
         #directory in the file system to serve web pages from
-        root /home/mran-user/src/OSS-site/dist;
+        root /home/mran-user/jenkins/workspace/raprojects-production-build/dist;
         index index.html index.htm;
 
         # public facing domain name for this vhost
