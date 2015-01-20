@@ -4,11 +4,12 @@
 * [How are snapshots created?](#snapshots)
 * [Important note regarding dates](#dates)
 * [Difference between snapshots of MRAN](#diffsnaps)
-* [Metadata and RRT integration](#metadatarrt)
+
 
 ### <a href="#whatismran" name="whatismran">#</a> What is MRAN?
+
 MRAN is a server side component with snapshot capabilities that works hand-in-hand
-with the client side [RRT package](http://revolutionanalytics.github.io/RRT).  
+with the client side [checkpoint package](https://github.com/revolutionanalytics/checkpoint).  
 
 Some of the main goals of MRAN:
 * Better organize the various places that R packages live on CRAN.
@@ -18,6 +19,7 @@ Some of the main goals of MRAN:
 * Optional drop-in replacement for standard CRAN mirror. (with snapshots)
 
 ### <a href="#indetail" name="indetail">#</a> In detail - MRAN (Modern R Archive Network)
+
 MRAN is downstream snapshot of CRAN. One of the main differentiations of MRAN to CRAN
 is that MRAN consists of a series of snapshots that are taken once a day using a
 script that points to the master CRAN server hosted at [Universität Wien](http://www.univie.ac.at/en)
@@ -34,7 +36,7 @@ However, that also creates a volatile environment where package versions can cha
 on any given day. Current CRAN and R standards do not allow a user to track specific
 versions of packages indefinitely.
 
-The core features of the [RRT](http://revolutionanalytics.github.io/RRT) package
+The core features of the [`checkpoint`](https://github.com/revolutionanalytics/checkpoint) package
 combined with the MRAN server backend frees a user from having to keep track of
 package versions and R versions if they want others to be able to reproduce their work.
 
@@ -43,7 +45,7 @@ of packages and R versions, a user is given the freedom to work on their project
 without fear that their hard work will be rendered irreproducible by updates to
 R or packages by authors.
 
-MRAN combined with the RRT front end are in essence a trace back mechanism
+MRAN combined with the `checkpoint` front end are in essence a trace back mechanism
 so users will have a way to go back to the version of a package that they were
 working on at a point in time.
 
@@ -56,8 +58,7 @@ choose, or optionally freeze time and keep working off a older snapshot indefini
 ### <a href="#structure">#</a> Structure
 
 Each MRAN snapshot holds all source versions of a package in the same
-per-package directory on the MRAN server.  
-i.e. [http://mran.revolutionanalytics.com/snapshots/src/2014-06-20_0500/zoo/](http://mran.revolutionanalytics.com/snapshots/src/2014-06-20_0500/zoo/)
+per-package directory on the MRAN server, e.g. [http://mran.revolutionanalytics.com/snapshots/src/2014-06-20_0500/zoo/](http://mran.revolutionanalytics.com/snapshots/src/2014-06-20_0500/zoo/)
 
 Binary package snapshots are stored on a per platform basis, as they would be on CRAN.
 Note that for binary packages MRAN is only taking snapshots of R-release (current stable).
@@ -67,6 +68,7 @@ i.e. The zoo package on 23 July 2014 is compiled using R-release 3.1.
 
 
 ### <a href="#snapshots" name="snapshots">#</a> How are snapshots created?
+
 Snapshots are created using [ZFS](http://open-zfs.org/wiki/Main_Page).
 The MRAN server is specifically using the native Linux kernel port, [ZFS-on-Linux](http://zfsonlinux.org/).
 The ZFS-on-Linux project was started at [Lawrence Livermore National Laboratory](https://www.llnl.gov/).
@@ -96,6 +98,7 @@ All MRAN snapshots are exposed at:
 
 
 ### <a href="#dates" name="dates">#</a> Important note regarding dates
+
 MRAN snapshots are taken using the UTC time zone as the basis for dates.
 
 
@@ -109,9 +112,3 @@ at any point in time.
 The output of the diffs are exposed at:  
 [http://mran.revolutionanalytics.com/diffs/](http://mran.revolutionanalytics.com/diffs/)
 
-### <a href="#metadatarrt" name="metadatarrt">#</a> Metadata and RRT integration
-
-`mran_metadata.R` creates metadata from each snapshot of source packages.
-A variety of metadata above and beyond what a CRAN package description file contains is stored for each R package.  
-All metadata is exposed at:  
-[http://mran.revolutionanalytics.com/metadata/](http://mran.revolutionanalytics.com/metadata/)
