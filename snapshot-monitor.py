@@ -14,8 +14,8 @@ else:
     msg = MIMEText("Whoa! Todays MRAN snapshot is missing!")
     msg['Subject'] = 'MRAN Snapshot Monitor'
     msg['From'] = 'mran-monitor@revolutionanalytics.com'
-    msg['To'] = 'chris.mosetick@revolutionanalytics.com'
+    msg['To'] = 'rro-ops@revolutionanalytics.com'
  
     s = smtplib.SMTP('localhost')
-    s.sendmail('mran-monitor@revolutionanalytics.com', ['chris.mosetick@revolutionanalytics.com'], msg.as_string())
+    s.sendmail('mran-monitor@revolutionanalytics.com', ['rro-ops@revolutionanalytics.com'], msg.as_string())
     s.quit()
